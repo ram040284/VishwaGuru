@@ -3,7 +3,7 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
   
  <hibernate-mapping>  
-  <class name="com.payroll.employee.dataobjects.EmpDesignation" table="EMP_DESG_DETAILS">  
+  <class name="com.payroll.employee.dataobjects.EmpHeadInfo" table="EMP_COST_HEAD_DETAILS">  
      <!-- <composite-id>
 		<key-property name="empId" column="EMP_ID"  />
 		<key-property name="designationId" column="DESG_ID" />
@@ -17,8 +17,8 @@
 	</id>
 	<one-to-one name="employee" class="com.payroll.employee.dataobjects.Employee"
 		constrained="true" fetch="select"></one-to-one>
-	<many-to-one name="designation"   
-        class="com.payroll.designation.dataobjects.Designation" column="DESG_ID" cascade="all">
+	<many-to-one name="headInfo"   
+        class="com.payroll.headInfo.dataobjects.HeadInfo" column="HEAD_ID" cascade="all">
 	</many-to-one>
 	
     <property name="lastWokingDate" column="LW_DATE" /> 

@@ -4,18 +4,22 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.payroll.department.dataobjects.Department;
+
 public class EmpDepartment implements Serializable{
-	int empId;
+	int employeeId;
 	int departmentId;
 	Date startDate;
 	private String status;
 	private Timestamp rowUpdDate;
+	private Employee employee;
+	private Department department;
 	
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int empId) {
+		this.employeeId = empId;
 	}
 	public int getDepartmentId() {
 		return departmentId;
@@ -40,6 +44,18 @@ public class EmpDepartment implements Serializable{
 	}
 	public void setRowUpdDate(Timestamp rowUpdDate) {
 		this.rowUpdDate = rowUpdDate;
+	}
+	public Employee getEmployee() {
+		return employee;
+	}
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+	public Department getDepartment() {
+		return department;
+	}
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 	
 }

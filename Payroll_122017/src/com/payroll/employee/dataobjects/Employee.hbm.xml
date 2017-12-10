@@ -3,9 +3,10 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
   
  <hibernate-mapping>  
-  <class name="com.payroll.employee.dataobjects.Employee" table="EMPLOYEE">  
+  <class name="com.payroll.employee.dataobjects.Employee" table="EMP_MASTER">  
     <id name="employeeId" type="integer" >  
      <column name="EMP_ID" sql-type="integer" not-null="true"/>  
+     <generator class="increment"/>
     </id>  
     <property name="firstName" column="EMP_FNAME" not-null="true"/>
     <property name="lastName" column="EMP_LNAME" not-null="true"/>
@@ -14,9 +15,9 @@
     <property name="phone" column="EMP_PHONE" not-null="true"/>
     <property name="joiningDate" column="EMP_JOINING_DATE" not-null="true"/>
    <!-- <property name="lastWorkingDate" column="EMP_LWD_DATE" /> -->  
-    <property name="addressLine1" column="ADDRESS_LINE1" not-null="true"/>
-    <property name="addressLine2" column="ADDRESS_LINE2" not-null="true"/>
-    <property name="addressLine3" column="ADDRESS_LINE3" not-null="true"/>
+    <property name="addressLine1" column="ADDR_LINE1" not-null="true"/>
+    <property name="addressLine2" column="ADDR_LINE2" not-null="true"/>
+    <property name="addressLine3" column="ADDR_LINE3" not-null="true"/>
     <property name="dob" column="BIRTH_DATE" not-null="true"/>
     <property name="rowUpdatedDate" column="ROW_UPD_DATE" not-null="true"/>
     <property name="contactNo" column="EMP_CONTACTNO" />
@@ -27,5 +28,6 @@
     <property name="gender" column="GENDER" />
     <!-- <property name="designationId" column="designation_id" not-null="true"/>  
     <property name="departmentId" column="department_id"/> -->  
+    
   </class>  
  </hibernate-mapping> 

@@ -192,11 +192,12 @@ public class DesignationDAO {
 		Session session = null;
 		
 		try{
-			String queryString = " from Designation d where d.designationId = ? ";
+			String queryString = " from Designation d where d.designationId = ? and status = ?";
 					
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
 			query.setParameter(0, desgId);
+			query.setParameter(1, "A");
 			designation = (Designation)(!(query.list().isEmpty())?query.list().get(0) : null);
 		}catch(Exception e){
 			e.printStackTrace();

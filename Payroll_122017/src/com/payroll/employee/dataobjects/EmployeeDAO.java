@@ -10,7 +10,13 @@ import org.hibernate.Transaction;
 
 import com.payroll.HibernateConnection;
 import com.payroll.Utils;
+import com.payroll.department.dataobjects.Department;
+import com.payroll.department.dataobjects.DepartmentDAO;
+import com.payroll.designation.dataobjects.Designation;
+import com.payroll.designation.dataobjects.DesignationDAO;
 import com.payroll.employee.vo.EmployeeVO;
+import com.payroll.headInfo.dataobjects.HeadInfo;
+import com.payroll.headInfo.dataobjects.HeadInfoDAO;
 
 public class EmployeeDAO {
 
@@ -23,16 +29,16 @@ public class EmployeeDAO {
 			StringBuffer searchCriteria = new StringBuffer("");
 			searchCriteria.append(" select new com.payroll.employee.vo.EmployeeVO(e.employeeId, e.firstName, e.lastName, e.middleName,"
 					+ " e.email, e.phone, e.pan, e.adharNo, e.dob,"
-					+ "(select dept.departmantName from Department dept where dept.departmentId = (select eDept.departmentId from EmployeeMaster eDept where eDept.empId = e.employeeId)),"
-					+ "(select h.headName from HeadInfo h where h.headId = (select eMas.headId from EmployeeMaster eMas where eMas.empId = e.employeeId)),"
+					+ "(select dept.departmantName from Department dept where dept.departmentId = (select eDept.department.departmentId from EmpDepartment eDept where eDept.employee.employeeId = e.employeeId)),"
+					+ "(select h.headName from HeadInfo h where h.headId = (select eMas.headInfo.headId from EmpHeadInfo eMas where eMas.employee.employeeId = e.employeeId)),"
 					+ "(select desg.designationName from Designation desg where desg.designationId = "
-					+ "(select eDesg.designationId from EmployeeMaster eDesg where eDesg.empId = e.employeeId)), "
+					+ "(select eDesg.designation.designationId from EmpDesignation eDesg where eDesg.employee.employeeId = e.employeeId)), "
 					+ "e.addressLine1, e.addressLine2, e.addressLine3, e.gender, e.joiningDate) from Employee e where e.status= ?");		
 			
 			if(deptId != 0)
-				searchCriteria.append(" and e.employeeId = (select eDept.empId from EmpDepartment eDept where e.employeeId = eDept.empId and eDept.departmentId = ?)");
+				searchCriteria.append(" and e.employeeId = (select eDept.employee.employeeId from EmpDepartment eDept where e.employeeId = eDept.employee.employeeId and eDept.department.departmentId = ?)");
 			if(headId != 0){
-				searchCriteria.append(" and e.employeeId = (select eMas.empId from EmployeeMaster eMas where e.employeeId = eMas.empId and eMas.headId = ?)");
+				searchCriteria.append(" and e.employeeId = (select eMas.employee.employeeId from EmpHeadInfo eMas where e.employeeId = eMas.employee.employeeId and eMas.headInfo.headId = ?)");
 			}
 			if(!Utils.isEmpty(name))
 				searchCriteria.append(" and (e.firstName like :fname or e.middleName like :mname or e.lastName like :lname)");
@@ -66,8 +72,8 @@ public class EmployeeDAO {
 			//String queryString = " from Employee";
 			String queryString = " select new com.payroll.employee.vo.EmployeeVO(e.employeeId, e.firstName, "
 					+ "e.lastName, e.middleName) from Employee e where e.status = ? and e.employeeId = "
-					+ "(select eDept.empId from EmpDepartment eDept where eDept.empId=e.employeeId and eDept.departmentId = ? ) and "
-					+ "e.employeeId = (select eDesg.empId from EmpDesignation eDesg where eDesg.empId=e.employeeId and "
+					+ "(select eDept.employeeId from EmpDepartment eDept where eDept.employeeId=e.employeeId and eDept.departmentId = ? ) and "
+					+ "e.employeeId = (select eDesg.employeeId from EmpDesignation eDesg where eDesg.employeeId=e.employeeId and "
 					+ " eDesg.designationId = ? and eDesg.lastWokingDate is null)";		
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
@@ -89,9 +95,9 @@ public class EmployeeDAO {
 		try{
 			//String queryString = " from Employee e where e.employeeId = ?";
 			String queryString = " select new com.payroll.employee.vo.EmployeeVO(e.employeeId, e.firstName, e.lastName, e.middleName,"
-					+ " e.email, e.phone, e.pan, e.adharNo, e.dob, (select eDept.departmentId from EmployeeMaster eDept where eDept.empId = e.employeeId), "
-					+ "(select dh.headId from EmployeeMaster dh where dh.empId = e.employeeId), "
-					+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.empId = e.employeeId and eDesg.lastWokingDate is null), "
+					+ " e.email, e.phone, e.pan, e.adharNo, e.dob, (select eDept.department.departmentId from EmpDepartment eDept where eDept.employee.employeeId = e.employeeId), "
+					+ "(select dh.headInfo.headId from EmpHeadInfo dh where dh.employee.employeeId = e.employeeId), "
+					+ "(select eDesg.designation.designationId from EmpDesignation eDesg where eDesg.employee.employeeId = e.employeeId and eDesg.lastWokingDate is null), "
 					+ "e.addressLine1, e.addressLine2, e.addressLine3, e.gender, e.joiningDate) from Employee e where e.employeeId = ? and e.status = ?";		
 			if(session == null || !session.isOpen()) 
 				session = HibernateConnection.getSessionFactory().openSession();
@@ -111,7 +117,7 @@ public class EmployeeDAO {
 	public EmpDesignation getEmpDesignationByIds(int empId, int desgId, Session session){
 		EmpDesignation empDesig = null;
 		try{
-			String queryString = " from EmpDesignation ed where ed.empId = ? and ed.designationId = ? and ed.status = ?";
+			String queryString = " from EmpDesignation ed where ed.employeeId = ? and ed.designationId = ? and ed.status = ?";
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
 			query.setParameter(0, empId);
@@ -148,19 +154,19 @@ public class EmployeeDAO {
 				System.out.println("Deleted:"+updated);
 				if(updated == 1){
 					EmployeeVO empDB = getEmployeeById(empId, null);
-					Query queryED = session.createQuery("Update EmpDesignation eDesg set eDesg.status = ?, eDesg.rowUpdDate = ? where eDesg.empId = ? and eDesg.designationId = ?");
+					Query queryED = session.createQuery("Update EmpDesignation eDesg set eDesg.status = ?, eDesg.rowUpdDate = ? where eDesg.employee.employeeId = ? and eDesg.designationId = ?");
 					queryED.setParameter(0, "S");
 					queryED.setParameter(1, new Timestamp(System.currentTimeMillis()));
 					queryED.setParameter(2, empId);
 					queryED.setParameter(3, empDB.getDesignationId());
 					updated = queryED.executeUpdate();
-					Query queryEDp = session.createQuery("Update EmpDepartment eDept set eDept.status = ?, eDept.rowUpdDate = ? where eDept.empId = ? and eDept.departmentId = ?");
+					Query queryEDp = session.createQuery("Update EmpDepartment eDept set eDept.status = ?, eDept.rowUpdDate = ? where eDept.employee.employeeId = ? and eDept.departmentId = ?");
 					queryEDp.setParameter(0, "S");
 					queryEDp.setParameter(1, new Timestamp(System.currentTimeMillis()));
 					queryEDp.setParameter(2, empId);
 					queryEDp.setParameter(3, empDB.getDepartmentId());
 					updated = queryEDp.executeUpdate();
-					Query queryEM = session.createQuery("Update EmployeeMaster eMas set eMas.status = ?, eMas.rowUpdDate = ? where eMas.empId = ? ");
+					Query queryEM = session.createQuery("Update EmpHeadInfo eMas set eMas.status = ?, eMas.rowUpdDate = ? where eMas.employee.employeeId = ? ");
 					queryEM.setParameter(0, "S");
 					queryEM.setParameter(1, new Timestamp(System.currentTimeMillis()));
 					queryEM.setParameter(2, empId);
@@ -216,9 +222,12 @@ public class EmployeeDAO {
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
+			Department dept = new DepartmentDAO().getDepartmentById(emp.getDepartmentId());
+			HeadInfo headInfo = new HeadInfoDAO().getHeadInfoById(emp.getHeadId());
+			Designation designation = new DesignationDAO().getDesignationById(emp.getDesignationId());
 			if(emp.getEmployeeId() != 0) {
 				EmployeeVO empDB = getEmployeeById(emp.getEmployeeId());
-				if(empDB.getDepartmentId() != emp.getDepartmentId()){
+				/*if(empDB.getDepartmentId() != emp.getDepartmentId()){
 					EmpDepartment empDept = new EmpDepartment();
 					empDept.setDepartmentId(emp.getDepartmentId());
 					empDept.setEmpId(emp.getEmployeeId());
@@ -241,42 +250,43 @@ public class EmployeeDAO {
 					empDesg.setStatus("A");
 					empDesg.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
 					session.save(empDesg);
-				}
+				}*/
 				emp.setStatus("A");
 				emp.setRowUpdatedDate(new Timestamp(System.currentTimeMillis()));
 				session.update(emp);
 				
 			}else {
-				emp.setEmployeeId(getMaxEmpId(session));
+				//emp.setEmployeeId(getMaxEmpId(session));
 				emp.setStatus("A");
 				emp.setRowUpdatedDate(new Timestamp(System.currentTimeMillis()));
 				session.save(emp);
 				//Inserting Employee Department:
 				EmpDepartment empDept = new EmpDepartment();
-				empDept.setDepartmentId(emp.getDepartmentId());
-				empDept.setEmpId(emp.getEmployeeId());
 				empDept.setStartDate(new Date());
 				empDept.setStatus("A");
+				empDept.setDepartment(dept);
+				empDept.setEmployee(emp);
 				empDept.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
-				
 				session.save(empDept);
+				//Inserting Employee Head:
+				EmpHeadInfo empHead = new EmpHeadInfo();
+				empHead.setStartDate(new Date());
+				empHead.setStatus("A");
+				empHead.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
+				empHead.setEmployee(emp);
+				empHead.setHeadInfo(headInfo);
+				session.save(empHead);
 				//Inserting Employee Designation:
 				EmpDesignation empDesg = new EmpDesignation();
-				empDesg.setDesignationId(emp.getDesignationId());
-				empDesg.setEmpId(emp.getEmployeeId());
+				//empDesg.setDesignationId(emp.getDesignationId());
+				//empDesg.setEmpId(emp.getEmployeeId());
 				empDesg.setStartDate(new Date());
 				empDesg.setStatus("A");
 				empDesg.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
+				empDesg.setEmployee(emp);
+				empDesg.setDesignation(designation);
 				session.save(empDesg);
-				//Inserting Employee Master:
-				EmployeeMaster eMas = new EmployeeMaster();
-				eMas.setDepartmentId(emp.getDepartmentId());
-				eMas.setDesignationId(emp.getDesignationId());
-				eMas.setHeadId(emp.getHeadId());
-				eMas.setEmpId(emp.getEmployeeId());
-				eMas.setStatus("A");
-				eMas.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
-				session.save(eMas);
+				
 			}
 			transaction.commit();
 			result = "Yes";

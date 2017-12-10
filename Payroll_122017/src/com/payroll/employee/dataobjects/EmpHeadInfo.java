@@ -4,30 +4,29 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.payroll.designation.dataobjects.Designation;
+import com.payroll.headInfo.dataobjects.HeadInfo;
 
-public class EmpDesignation implements Serializable{
+public class EmpHeadInfo implements Serializable{
 	
 	private int employeeId;
-	private int designationId;
+	private int headId;
 	private Date startDate;
 	private Date lastWokingDate;
 	private String status;
 	private Timestamp rowUpdDate;
 	private Employee employee;
-	private Designation designation;
-	
+	private HeadInfo headInfo;
 	public int getEmployeeId() {
 		return employeeId;
 	}
-	public void setEmployeeId(int empId) {
-		this.employeeId = empId;
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
 	}
-	public int getDesignationId() {
-		return designationId;
+	public int getHeadId() {
+		return headId;
 	}
-	public void setDesignationId(int designationId) {
-		this.designationId = designationId;
+	public void setHeadId(int headId) {
+		this.headId = headId;
 	}
 	public Date getStartDate() {
 		return startDate;
@@ -59,11 +58,11 @@ public class EmpDesignation implements Serializable{
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
 	}
-	public Designation getDesignation() {
-		return designation;
+	public HeadInfo getHeadInfo() {
+		return headInfo;
 	}
-	public void setDesignation(Designation designation) {
-		this.designation = designation;
+	public void setHeadInfo(HeadInfo headInfo) {
+		this.headInfo = headInfo;
 	}
-	
+
 }
