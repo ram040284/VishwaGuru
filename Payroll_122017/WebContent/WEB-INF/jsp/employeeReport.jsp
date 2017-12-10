@@ -5,9 +5,8 @@
 <head>
 <title>Reports</title>
 
-
-<jsp:include page="../jsp/public/jqueryPluginMin.jsp"/>
-
+<%-- <link href="../Payroll/resources/css/jquery.dataTables.min.css" rel="stylesheet"/> --%>
+<link href="../Payroll/resources/css/dataTables.bootstrap.min.css" rel="stylesheet"/>
 <style type="text/css">
 select {
 	min-width: 200px;
@@ -45,10 +44,40 @@ select {
 	color: white;
 }
 
+table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc_disabled:after {
+display: none;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button{
+color: white;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button a:{
+  	color: #fff;
+	border-radius:5px;
+	background-color: #3b589a;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button a:hover{
+  	color: #fff;
+	border-radius:5px;
+	background-color: #3b589a;
+}
+ 
+.dataTables_wrapper .dataTables_paginate .paginate_button a:active {
+  	color: #fff; 
+	background-color: #8B9DC3;
+	border-radius:5px;
+	margin-right: 5px;
+}
 </style>
 <jsp:include page="../jsp/public/postHeader.jsp" />
+<script src="../Payroll/resources/js/jquery.dataTables.min.js"></script>
+<script src="../Payroll/resources/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+	$('#closeSearch').hide();
+
 	$('#printLink').click(function(event) {
 		var newWin = window.frames["empRptFrame"];
 		
@@ -69,9 +98,34 @@ $(document).ready(function() {
 	});
 	
 	$("#downloadLink").click(function(event) {
-		alert("download ...");
 		window.location = "../Payroll/employeeRptDownload";
 	});
+	
+	$('#empRptTable').DataTable({
+		"info" : false,
+		"paging" : false,
+	  	"filter" : false,
+	  	"lengthChange" : false,
+	  	"autoWidth" : true,
+	  	"pagingType" : "full"
+ 	});
+	
+	<c:if test="${employees.size() gt 0}">
+		$('#searchDiv').hide();
+	</c:if>
+	
+	$('#modifySearch').click(function(event) {
+		$('#searchDiv').show();
+		$('#closeSearch').show();
+		$('#modifySearch').hide();
+	});
+	
+	$('#closeSearch').click(function(event) {
+		$('#searchDiv').hide();
+		$('#closeSearch').hide();
+		$('#modifySearch').show();
+	});
+	
 });
       </script>
 </head>
@@ -81,18 +135,19 @@ $(document).ready(function() {
 	<jsp:include page="../jsp/employeeSearch.jsp" />
 	
 	<c:if test="${employees.size() gt 0}">
-	<div class="col-sm-12" style ="width:100%;padding-left:0px;margin-top:10px;margin-left:0px;">
+	<div class="col-sm-12" style ="width:100%;padding-left:0px;margin-top:0px;margin-left:0px;">
 	<div class="col-sm-4" style ="padding-left:0px;margin-left:0px;"><h6 style="color: #0101DF;margin-bottom:0px;">Employee Information</h6></div> 
-	<div class="col-sm-4" ></div><div class="col-sm-2" ></div>
+	<div class="col-sm-4" style ="text-align:right;">
+	<a id="modifySearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Modify Search</b></a>
+	<a id="closeSearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Close Search</b></a>
+	</div><div class="col-sm-2" ></div>
 	<div class="col-sm-2" style ="text-align:right;">
 	<a id="downloadLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Download</b></a>
 	<a id="printLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;"><b>Print</b></a></div>
 	</div>
-	<div id="empListDiv" style ="width:100%;margin-top:10px;overflow:auto;max-height: 500px;overflow-y: auto;border-collapse: collapse;border: 1px solid #aaa;">
-	<%-- <c:if test="${empty employees}"> 
-		<h4 style="color: #0101DF;" align="center">No Records Found</h4>
-	</c:if> --%>
-		<table class="rptTblClass table-responsive">
+	<div id="empListDiv" style ="width:100%;overflow-x: auto;overflow-y: auto;min-height:10px;max-height:380px;">
+		<table id="empRptTable" class="rptTblClass table table-striped table-bordered table-hover table-responsive">
+		<thead>
 			<tr>
 			<th>Name</th>
 			<th>Department</th>
@@ -111,8 +166,7 @@ $(document).ready(function() {
 			<th>Grade Pay</th>
 			<th>Scale Pay</th>
 			<th>Scale Increment</th>
-			
-			</tr>
+			</tr></thead>
 			<c:forEach var="employee" items="${employees}">
 			<tr>
 			<td> ${employee.fullName} </td>
@@ -138,7 +192,8 @@ $(document).ready(function() {
 		</div>
 	</c:if>
 	</div>			
-	</div>	
+	</div>
+
 	<iframe id="empRptFrame" name="empRptFrame" src="javascript:false" style="display:none;">
 	</iframe>
 	<jsp:include page="../jsp/public/postFooter.jsp" />

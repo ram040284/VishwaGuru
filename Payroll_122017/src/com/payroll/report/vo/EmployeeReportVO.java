@@ -53,9 +53,9 @@ public class EmployeeReportVO implements Serializable{
 	}
 	
 	public EmployeeReportVO(int employeeId, String firstName, String lastName, String middleName,
-			String email, String phone, String pan, String aadhar, Date dob, String department,
+			String email, String phone, String pan, String aadhar, Date dob, String department, String head,
 			String designation, String addressLine1, String addressLine2, String addressLine3, 
-			String gender, Date joiningDate, String head){
+			String gender, Date joiningDate){
 		this.employeeId = employeeId;
 		
 		this.email = getValue(email);

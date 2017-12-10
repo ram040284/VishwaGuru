@@ -36,21 +36,17 @@ th {
 <script type="text/javascript">
 $(document).ready(function() {
 	
-	$("#collapse").hide();
-	$("#expand").show();
+	<%--$("#collapse").hide();
+	$("#expand").show(); --%>
 	var departmentList = ${sessionScope.departments};
-	<%--var designationList = ${sessionScope.designations};--%>
 	$.each(departmentList, function( index, value ) {
-		$('<option>').val(value.departmentId).text(value.departmantName).appendTo('#departmentBox');
+		$('<option>').val(value.departmentId).text(value.departmantName).appendTo('#departmentId');
 	});
-	<%--$.each(designationList, function( index, value ) {
-		$('<option>').val(value.designationId).text(value.designationName).appendTo('#designationBox');
-	});--%>
 	
 	var deptId = "${employee.departmentId}";
-	$('#departmentBox').val(deptId);
-	<%--var desgId = "${employee.designationId}";--%>
-	$('#designationBox').val(desgId);
+	$('#departmentId').val(deptId);
+	var headId = "${employee.headId}";
+	$('#headId').val(headId);
 	
 	$('#closeBtn').click(function(event) {
 		   $("#searchDiv").toggle();
@@ -60,18 +56,58 @@ $(document).ready(function() {
 	
 
 });
+
+function getHeads(){
+	if($('#departmentId').val() == 0){
+		$('#headId').val(0);
+		$('#departmentId').focus();
+		return false;
+	}
+	var deptId = $('#departmentId').val();
+	getHeadsByDept(deptId, 0);
+}
+
+function getHeadsByDept(deptId, headId) {
+	var inputJson = { "departmentId" : deptId};
+	  $.ajax({
+	    url: '../Payroll/loadHeads',
+	    data: JSON.stringify(inputJson),
+	    type: "POST",           
+	    beforeSend: function(xhr) {
+	        xhr.setRequestHeader("Accept", "application/json");
+	        xhr.setRequestHeader("Content-Type", "application/json");
+	    },
+	    success: function(data){ 
+	    	$('#headId').empty();
+	    	$('<option>').val(0).text("-- Select Head --").appendTo('#headId');
+	    	<%--$('#designationId').empty();
+	    	$('<option>').val(0).text("-- Select Designation --").appendTo('#designationId'); --%>
+	    	$(data).each(function(i, headInfo){
+	    		$('<option>').val(headInfo.headId).text(headInfo.headName).appendTo('#headId');
+	    	});
+	    	<%--var headId = "${salary.headId}";--%>
+	    	if(headId !=0) {
+	  			$('#headId').val(headId);
+	  		}
+	    },
+	    failure: function (){
+	    	alert('Unable to load Heads');
+	    }
+	});
+}
 </script>
 
+<%-- 
 <div style="width:100%;"> 
 <h6 style="color: #0101DF;margin-bottom:0px;"><a id="closeBtn" href="#" style="color: blue;"><label id="collapse" style="color: blue;" class="glyphicon-plus"></label> <label id="expand" class="glyphicon-minus" style="color: blue;"></label> Show / Hide Search</a></h6>
-</div>  
-<div id="searchDiv" style="width:100%;margin-top:0px;" class="formDiv">
+</div>  --%>
+<div id="searchDiv" style="width:100%;margin-top:0px;" class="panel panel-default formDiv">
 	<form:form method = "POST" action = "../Payroll/employeeReport" >
 	<div  class="col-sm-12" style="margin-top:0px; margin-bottom:10px; padding-top:5px; padding-bottom:10px;float: left;">
 	<div class="row">
 	<div class="col-sm-3">
 		<label>Department </label> 
-		<select id="departmentBox" class="form-control" name="departmentId" onchange="getHeads()">
+		<select id="departmentId" class="form-control" name="departmentId" onchange="getHeads()">
 		<option value="0">-- Select Department --</option></select>
 	</div>
 	<div class="col-sm-3">

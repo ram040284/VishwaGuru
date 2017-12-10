@@ -34,44 +34,27 @@ public class EmployeeReportController {
 	public ModelAndView getEmployeesSearch(HttpServletRequest request, ModelMap modelMap){
 	   ObjectMapper mapper = new ObjectMapper();
 	   List<Department> deptList = new DepartmentService().getDepartments();
-	   List<Designation> desigList = new DesignationService().getDesignationList();
 		   
 	   String depJSON = "";
-	   String desigJSON = "";
 		try {
 			depJSON = mapper.writeValueAsString(deptList);
-			desigJSON = mapper.writeValueAsString(desigList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 	   request.getSession().setAttribute("employees", new ArrayList());
 	   request.getSession().setAttribute("departments", depJSON);
-	   request.getSession().setAttribute("designations", depJSON);
 	   
 	   Employee employee = new Employee();
 	   ModelAndView model = new ModelAndView("employeeReport", "command", employee);
 	   model.addObject(employee);
-	   model.addObject("departments", depJSON);
-	   model.addObject("designations", desigJSON);
 	   return model;
     }
 	   
    @RequestMapping(value="/employeeReport", method=RequestMethod.POST)
    public ModelAndView getEmployeesReport(HttpServletRequest request, Employee employee){
-	  /* List<Department> deptList = new DepartmentService().getDepartments();
-	   List<Designation> desigList = new DesignationService().getDesignationList();
-	   ObjectMapper mapper = new ObjectMapper();
-	   String depJSON = "";
-	   String desigJSON = "";
-	   try {
-			depJSON = mapper.writeValueAsString(deptList);
-			desigJSON = mapper.writeValueAsString(desigList);
-	   } catch (Exception e) {
-		   	e.printStackTrace();
-	   }*/
 			
-	   List<EmployeeReportVO> employeesList = new EmployeeReportService().getEmployees(employee.getDepartmentId(), employee.getDesignationId()); 
+	   List<EmployeeReportVO> employeesList = new EmployeeReportService().getEmployees(employee.getDepartmentId(), employee.getHeadId()); 
 	   
 	   List<EmployeeReportVO> employees = new ArrayList<EmployeeReportVO>();
 	   String name = employee.getFirstName()!= null? employee.getFirstName().trim(): "";
@@ -89,8 +72,6 @@ public class EmployeeReportController {
 	   ModelAndView model = new ModelAndView("employeeReport", "command", employee);
 	   model.addObject(employee);
 	   model.addObject("employees", employees);
-	   //model.addObject("departments", depJSON);
-	   //model.addObject("designations", desigJSON);
 	   return model;
    }
    
@@ -100,14 +81,14 @@ public class EmployeeReportController {
 	   String csvFileName = "EmployeeReport_"+format.format(new Date())+".csv";
 	   
 	   List<EmployeeReportVO> employeesList = (List<EmployeeReportVO>)request.getSession().getAttribute("employees");
-	   StringBuilder fileContent =new StringBuilder("Name, Gender, Date of Birth, Department, Head, Designation, Joining Date, Phone, Email, Address, PAN, Aadhar, Year, Basic Pay, Grade Pay, Scale Pay, Scale Increment,").append("\n");
+	   StringBuilder fileContent =new StringBuilder("Name, Department, Head, Designation, Gender, Date of Birth, Joining Date, Phone, Email, Address, PAN, Aadhar, Year, Basic Pay, Grade Pay, Scale Pay, Scale Increment,").append("\n");
 	   for (EmployeeReportVO employeeVO : employeesList) {
 		   fileContent.append(employeeVO.getFullName()).append(", ");
-		   fileContent.append(employeeVO.getGender()).append(", ");
-		   fileContent.append(employeeVO.getDob()).append(", ");
 		   fileContent.append(employeeVO.getDepartment()).append(", ");
 		   fileContent.append(employeeVO.getHeadName()).append(", ");
 		   fileContent.append(employeeVO.getDesignation()).append(", ");
+		   fileContent.append(employeeVO.getGender()).append(", ");
+		   fileContent.append(employeeVO.getDob()).append(", ");
 		   fileContent.append(employeeVO.getJoiningDate()).append(", ");
 		   fileContent.append(employeeVO.getPhone()).append(", ");
 		   fileContent.append(employeeVO.getEmail()).append(", ");
