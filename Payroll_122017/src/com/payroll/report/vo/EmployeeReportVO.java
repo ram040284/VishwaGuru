@@ -58,24 +58,24 @@ public class EmployeeReportVO implements Serializable{
 			String gender, Date joiningDate){
 		this.employeeId = employeeId;
 		
-		this.email = getValue(email);
-		this.pan = getValue(pan);
-		this.adharNo = getValue(aadhar);
-		this.phone = getValue(phone);
-		this.firstName = getValue(firstName);
-		this.middleName = getValue(middleName);
-		this.lastName = getValue(lastName);
-		this.designation = getValue(designation);
-		this.department = getValue(department);
+		this.email = Utils.safeTrim(email);
+		this.pan = Utils.safeTrim(pan);
+		this.adharNo = Utils.safeTrim(aadhar);
+		this.phone = Utils.safeTrim(phone);
+		this.firstName = Utils.safeTrim(firstName);
+		this.middleName = Utils.safeTrim(middleName);
+		this.lastName = Utils.safeTrim(lastName);
+		this.designation = Utils.safeTrim(designation);
+		this.department = Utils.safeTrim(department);
 		this.dob = (dob != null) ? dateFormat.format(dob) : "";
-		this.addressLine1 = getValue(addressLine1);
-		this.addressLine2 = getValue(addressLine2);
-		this.addressLine3 = getValue(addressLine3);
+		this.addressLine1 = Utils.safeTrim(addressLine1);
+		this.addressLine2 = Utils.safeTrim(addressLine2);
+		this.addressLine3 = Utils.safeTrim(addressLine3);
 		this.address = addressLine1 + " " + addressLine2 + " " + addressLine3;
-		this.gender = getValue(gender); 
+		this.gender = Utils.safeTrim(gender); 
 		this.fullName = getName(firstName, middleName, lastName);
 		this.joiningDate = (joiningDate != null) ? dateFormat.format(joiningDate) : "";
-		this.headName = getValue(head);
+		this.headName = Utils.safeTrim(head);
 	}
 		
 	public EmployeeReportVO(int employeeId, String firstName, String lastName, String middleName,
@@ -94,9 +94,9 @@ public class EmployeeReportVO implements Serializable{
 		this.designation = designation;
 		this.department = department;
 		this.dob = (dob != null) ? dateFormat.format(dob) : "";
-		this.addressLine1 = getValue(addressLine1);
-		this.addressLine2 = getValue(addressLine2);
-		this.addressLine3 = getValue(addressLine3);
+		this.addressLine1 = Utils.safeTrim(addressLine1);
+		this.addressLine2 = Utils.safeTrim(addressLine2);
+		this.addressLine3 = Utils.safeTrim(addressLine3);
 		this.address = addressLine1 + addressLine2 + addressLine3;
 		this.gender = gender; 
 		this.fullName = getName(firstName, middleName, lastName);
@@ -193,10 +193,6 @@ public class EmployeeReportVO implements Serializable{
 			fullNameSB.append(" ");
 		fullNameSB.append(Utils.safeTrim(mName)).append(" ").append(Utils.safeTrim(lName));
 		return fullNameSB.toString();
-	}
-	 
-	public String getValue(String val) {
-	   return (val == null) ? "" : val.trim();
 	}
 	public SalaryVO getSalaryVo() {
 		return salaryVo;

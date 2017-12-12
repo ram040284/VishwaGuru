@@ -21,11 +21,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.payroll.department.business.DepartmentService;
 import com.payroll.department.dataobjects.Department;
-import com.payroll.designation.business.DesignationService;
-import com.payroll.designation.dataobjects.Designation;
-import com.payroll.employee.Employee;
+import com.payroll.employee.SearchCriteria;
 import com.payroll.employee.salary.vo.SalaryVO;
 import com.payroll.report.business.EmployeeReportService;
+import com.payroll.report.vo.EmpSalaryReportVO;
 import com.payroll.report.vo.EmployeeReportVO;
 
 @Controller
@@ -45,19 +44,42 @@ public class EmployeeReportController {
 	   request.getSession().setAttribute("employees", new ArrayList());
 	   request.getSession().setAttribute("departments", depJSON);
 	   
-	   Employee employee = new Employee();
+	   SearchCriteria employee = new SearchCriteria();
+	   employee.setSearchType("employeeReport");
 	   ModelAndView model = new ModelAndView("employeeReport", "command", employee);
-	   model.addObject(employee);
+	   model.addObject("search", employee);
 	   return model;
     }
+	  
+	@RequestMapping(value="/empSalarySearch",method=RequestMethod.GET)
+	public ModelAndView getEmployeesSalarySearch(HttpServletRequest request, ModelMap modelMap){
+	   ObjectMapper mapper = new ObjectMapper();
+	   List<Department> deptList = new DepartmentService().getDepartments();
+		   
+	   String depJSON = "";
+		try {
+			depJSON = mapper.writeValueAsString(deptList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	   request.getSession().setAttribute("empSalaryReport", new ArrayList());
+	   request.getSession().setAttribute("departments", depJSON);
 	   
+	   SearchCriteria employee = new SearchCriteria();
+	   employee.setSearchType("empSalaryReport");
+	   ModelAndView model = new ModelAndView("employeeSalaryReport", "command", employee);
+	   model.addObject("search", employee);
+	   return model;
+    }
+	
    @RequestMapping(value="/employeeReport", method=RequestMethod.POST)
-   public ModelAndView getEmployeesReport(HttpServletRequest request, Employee employee){
+   public ModelAndView getEmployeesReport(HttpServletRequest request, SearchCriteria search){
 			
-	   List<EmployeeReportVO> employeesList = new EmployeeReportService().getEmployees(employee.getDepartmentId(), employee.getHeadId()); 
+	   List<EmployeeReportVO> employeesList = new EmployeeReportService().getEmployees(search.getDepartmentId(), search.getHeadId()); 
 	   
 	   List<EmployeeReportVO> employees = new ArrayList<EmployeeReportVO>();
-	   String name = employee.getFirstName()!= null? employee.getFirstName().trim(): "";
+	   String name = search.getFirstName()!= null? search.getFirstName().trim(): "";
 	   if(!name.equals("") && employeesList != null && employeesList.size() != 0) {
 		   for (EmployeeReportVO empVO : employeesList) {
 			   if (empVO.getFullName().toUpperCase().contains(name.toUpperCase())) {
@@ -69,9 +91,33 @@ public class EmployeeReportController {
 	   }
 
 	   request.getSession().setAttribute("employees", employees);
-	   ModelAndView model = new ModelAndView("employeeReport", "command", employee);
-	   model.addObject(employee);
-	   model.addObject("employees", employees);
+	   ModelAndView model = new ModelAndView("employeeReport", "command", search);
+	   model.addObject("search", search);
+	   return model;
+   }
+   
+   @RequestMapping(value="/empSalaryReport", method=RequestMethod.POST)
+   public ModelAndView getEmployeesSalaryReport(HttpServletRequest request, SearchCriteria search){
+			
+	   List<EmpSalaryReportVO> employeesList = new EmployeeReportService().getEmpSalaryReport(search.getDepartmentId(), search.getHeadId()); 
+	   
+	   List<EmpSalaryReportVO> employees = new ArrayList<EmpSalaryReportVO>();
+	   String name = search.getFirstName()!= null? search.getFirstName().trim(): "";
+	   if(!name.equals("") && employeesList != null && employeesList.size() != 0) {
+		   for (EmpSalaryReportVO empVO : employeesList) {
+			   if (empVO.getFullName().toUpperCase().contains(name.toUpperCase())) {
+				   employees.add(empVO);
+			   }
+		   }
+	   } else {
+		   employees = employeesList;
+	   }
+	   
+	   System.out.println("Salary Report Size:" + employees.size());
+
+	   request.getSession().setAttribute("empSalaryReport", employees);
+	   ModelAndView model = new ModelAndView("employeeSalaryReport", "command", search);
+	   model.addObject("search", search);
 	   return model;
    }
    
@@ -115,9 +161,34 @@ public class EmployeeReportController {
 	   os.flush();
 	   os.close();
    }
-   
-   public String getValue(String val) {
-	   return (val == null) ? "" : val.trim();
-   }
 
+   @RequestMapping(value = "/empSalaryRptDownload", method = RequestMethod.GET, produces = "text/csv")
+   public @ResponseBody void downloadEmpSalReport(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	   DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+	   String csvFileName = "EmployeeSalaryReport_"+format.format(new Date())+".csv";
+	   
+	   List<EmpSalaryReportVO> employeesList = (List<EmpSalaryReportVO>)request.getSession().getAttribute("empSalaryReport");
+	   StringBuilder fileContent =new StringBuilder("Name, Basic, Grade Pay, CA, UFA, FPA, TA, HRA, PF,").append("\n");
+	   for (EmpSalaryReportVO employeeVO : employeesList) {
+		   fileContent.append(employeeVO.getFullName()).append(", ");
+		   fileContent.append(employeeVO.getBasic()).append(", ");
+		   fileContent.append(employeeVO.getGradePay()).append(", ");
+		   fileContent.append(employeeVO.getCa()).append(", ");
+		   fileContent.append(employeeVO.getUfa()).append(", ");
+		   fileContent.append(employeeVO.getFpa()).append(", ");
+		   fileContent.append(employeeVO.getTa()).append(", ");
+		   fileContent.append(employeeVO.isHraFlag()).append(", ");
+		   fileContent.append(employeeVO.isPfFlag()).append(", ");
+		   fileContent.append("\n");
+		   
+	   }
+	   
+       response.setContentType("text/csv");
+       response.setHeader("Content-Disposition", "attachment; filename=" + csvFileName);
+
+       ServletOutputStream os = response.getOutputStream();
+	   os.write(fileContent.toString().getBytes());
+	   os.flush();
+	   os.close();
+   }
 }	

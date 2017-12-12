@@ -43,9 +43,9 @@ $(document).ready(function() {
 		$('<option>').val(value.departmentId).text(value.departmantName).appendTo('#departmentId');
 	});
 	
-	var deptId = "${employee.departmentId}";
+	var deptId = "${search.departmentId}";
 	$('#departmentId').val(deptId);
-	var headId = "${employee.headId}";
+	var headId = "${search.headId}";
 	$('#headId').val(headId);
 	
 	$('#closeBtn').click(function(event) {
@@ -54,7 +54,50 @@ $(document).ready(function() {
 		   $("#expand").toggle();
 	});
 	
+	$('#closeSearch').hide();
 
+	$('#printLink').click(function(event) {
+		var newWin = window.frames["empRptFrame"];
+		
+		var frameDoc = newWin.document;
+        if (newWin.contentWindow)
+            frameDoc = newWin.contentWindow.document;
+
+        frameDoc.open();
+        frameDoc.writeln($('#empListDiv').html());
+        frameDoc.close();
+        if (newWin.contentWindow) {
+		newWin.contentWindow.focus();
+		newWin.contentWindow.print();
+        } else {
+        	newWin.focus();
+    		newWin.print();
+        }
+	});
+	
+	$('#modifySearch').click(function(event) {
+		$('#searchDiv').show();
+		$('#closeSearch').show();
+		$('#modifySearch').hide();
+	});
+	
+	$('#closeSearch').click(function(event) {
+		$('#searchDiv').hide();
+		$('#closeSearch').hide();
+		$('#modifySearch').show();
+	});
+	
+	$('#searchBtn').click(function(event) {
+		if ($('#searchType').val() == "employeeReport") {
+			$("#formSearch").attr("action", "../Payroll/employeeReport");
+		}
+		if ($('#searchType').val() == "empSalaryReport") {
+			$("#formSearch").attr("action", "../Payroll/empSalaryReport");
+		}
+		
+		$("#formSearch").submit();
+	});
+	
 });
 
 function getHeads(){
@@ -102,7 +145,7 @@ function getHeadsByDept(deptId, headId) {
 <h6 style="color: #0101DF;margin-bottom:0px;"><a id="closeBtn" href="#" style="color: blue;"><label id="collapse" style="color: blue;" class="glyphicon-plus"></label> <label id="expand" class="glyphicon-minus" style="color: blue;"></label> Show / Hide Search</a></h6>
 </div>  --%>
 <div id="searchDiv" style="width:100%;margin-top:0px;" class="panel panel-default formDiv">
-	<form:form method = "POST" action = "../Payroll/employeeReport" >
+	<form:form id="formSearch" method = "POST" action = "" >
 	<div  class="col-sm-12" style="margin-top:0px; margin-bottom:10px; padding-top:5px; padding-bottom:10px;float: left;">
 	<div class="row">
 	<div class="col-sm-3">
@@ -129,6 +172,7 @@ function getHeadsByDept(deptId, headId) {
 	</div>
 	</div>
 	</div>
+	<form:hidden id="searchType" path="searchType"/>
 	</form:form> 
 </div>
 	

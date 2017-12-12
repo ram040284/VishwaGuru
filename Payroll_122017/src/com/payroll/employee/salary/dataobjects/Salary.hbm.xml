@@ -3,12 +3,12 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
   
  <hibernate-mapping>  
-  <class name="com.payroll.employee.salary.dataobjects.Salary" table="EMP_SAL">  
+  <class name="com.payroll.employee.salary.dataobjects.Salary" table="EMP_SAL_MASTER">  
     <id name="empId" type="integer" >  
-     <column name="EMPID" sql-type="integer" not-null="true"/>  
+     <column name="EMP_ID" sql-type="integer" not-null="true"/>  
     </id>  
     
-     <property name="year" column="YEAR" not-null="true"/> 
+    <property name="year" column="YEAR" not-null="true"/> 
     <property name="basic" column="BASIC" not-null="true"/> 
     <property name="gradePay" column="GRD_PAY" not-null="true"/>
     <property name="scalePay" column="SCALE_PAY" not-null="true"/> 

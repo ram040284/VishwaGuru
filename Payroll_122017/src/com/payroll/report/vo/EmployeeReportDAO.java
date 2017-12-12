@@ -1,18 +1,15 @@
 package com.payroll.report.vo;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.payroll.HibernateConnection;
 import com.payroll.Utils;
-import com.payroll.report.vo.EmployeeReportVO;
 import com.payroll.employee.salary.dataobjects.SalaryDAO;
 import com.payroll.employee.salary.vo.SalaryVO;
-import com.payroll.employee.vo.EmployeeVO;
 
 public class EmployeeReportDAO {
 
@@ -52,6 +49,11 @@ public class EmployeeReportDAO {
 				query.setParameter("lname", "%"+name+"%");
 			}
 			employeeList = query.list();
+			
+			for (EmployeeReportVO employeeVo: employeeList) {
+				SalaryDAO dao = new SalaryDAO();
+				employeeVo.setSalaryVo(getEmpSalary(employeeVo.getEmployeeId()));
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
@@ -60,39 +62,57 @@ public class EmployeeReportDAO {
 		return employeeList;
 	}
 	
-	public List<EmployeeReportVO> getEmployees(int deptId, int desgId){
-		List<EmployeeReportVO> employeeList = null;
+	public SalaryVO getEmpSalary(int empId){
+		SalaryVO salVO = null;
 		Session session = null;
-		
 		try{
-			String queryString = " select new com.payroll.report.vo.EmployeeReportVO(e.employeeId, e.firstName, e.lastName, e.middleName,"
-					+ " e.email, e.phone, e.pan, e.adharNo, e.dob,(select dept.departmantName from Department dept "
-					+ "where dept.departmentId = (select eDept.departmentId from EmpDepartment eDept where eDept.empId = e.employeeId)), "
-					+ "(select desg.designationName from Designation desg where desg.designationId = "
-					+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.empId = e.employeeId and eDesg.lastWokingDate is null)), "
-					+ "e.addressLine1, e.addressLine2, e.addressLine3, e.gender) from Employee e where e.status= ? and "
-					+ "e.employeeId = (select eDept.empId from EmpDepartment eDept where eDept.empId=e.employeeId and eDept.departmentId = ? ) and "
-					+ "e.employeeId = (select eDesg.empId from EmpDesignation eDesg where eDesg.empId=e.employeeId and "
-					+ " eDesg.designationId = ? and eDesg.lastWokingDate is null)";
+			String queryString = " select new com.payroll.employee.salary.vo.SalaryVO(s.empId, '' , '', "
+					+ "s.year, s.basic, s.gradePay, s.scalePay, s.scaleInc) from Salary s where s.empId = ?";		
 			
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
-			query.setParameter(0, "A");
-			query.setParameter(1, deptId);
-			query.setParameter(2, desgId);
-			
-			employeeList = query.list();
-			
-			for (EmployeeReportVO employeeVo: employeeList) {
-				SalaryDAO dao = new SalaryDAO();
-				employeeVo.setSalaryVo(dao.getEmpSalary(employeeVo.getEmployeeId()));
-			}
-			
+			query.setParameter(0, empId);
+			salVO = (SalaryVO)(!(query.list().isEmpty()) ? query.list().get(0) : null);
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
 			HibernateConnection.closeSession(session);
 		}
-		return employeeList;
+		return salVO;
+	}
+	
+	public List<EmpSalaryReportVO> getEmpSalaryReport(int deptId, int headId){
+		SalaryVO salVO = null;
+		Session session = null;
+		List<EmpSalaryReportVO> empSalList = new ArrayList<EmpSalaryReportVO>();
+		try{
+			String queryString = "SELECT EMP_FNAME, EMP_MNAME, EMP_LNAME, BASIC, GRD_PAY, CA, UFALW, FPALW, TALW, HRA_FLAG, PF_FLAG, SUM(empLeave.NO_OF_LEAVES) as LWP "  
+				+ "FROM PAYROLL_DEV.EMP_MASTER empMaster "
+				+ "LEFT OUTER JOIN  PAYROLL_DEV.EMP_SAL_MASTER empSal "  
+				+ "ON empMaster.EMP_ID =empSal.EMP_ID "
+				+ "LEFT OUTER JOIN  PAYROLL_DEV.EMP_ALLOWANCES empAllowance " 
+				+ "ON empMaster.EMP_ID =empAllowance.EMP_ID "
+				+ "LEFT OUTER JOIN  PAYROLL_DEV.EMP_LEAVE_MASTER empLeave " 
+				+ "ON empMaster.EMP_ID =empLeave.EMP_ID "
+				+ "GROUP BY empMaster.EMP_ID;";		
+			
+			session = HibernateConnection.getSessionFactory().openSession();
+			Query query = session.createSQLQuery(queryString);
+			//query.setParameter(0, deptId);
+			List<Object[]> rows = query.list();
+			System.out.println("rows size:" + rows.size());
+			for(Object[] row : rows){
+				EmpSalaryReportVO empSalVo = new EmpSalaryReportVO(0, (String)row[0], (String)row[1], (String)row[2], 
+						(double)row[3], row[4]==null? 0.0:(double)row[4], row[5]==null? 0.0:(double)row[5], row[6]==null? 0.0:(double)row[6], 
+								row[7]==null? 0.0:(double)row[7], row[8]==null? 0.0:(double)row[8], 
+										row[9]==null? false:(boolean)row[9], row[10]==null? false:(boolean)row[10]);
+				empSalList.add(empSalVo);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			HibernateConnection.closeSession(session);
+		}
+		return empSalList;
 	}
 }

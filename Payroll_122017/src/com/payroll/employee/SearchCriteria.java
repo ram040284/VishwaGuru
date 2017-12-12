@@ -5,6 +5,7 @@ public class SearchCriteria {
 	private int departmentId;
 	private int headId;
 	private String firstName;
+	private String searchType;
 	
 	public int getDepartmentId() {
 		return departmentId;
@@ -23,6 +24,12 @@ public class SearchCriteria {
 	}
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+	}
+	public String getSearchType() {
+		return searchType;
+	}
+	public void setSearchType(String searchType) {
+		this.searchType = searchType;
 	}
 
 }

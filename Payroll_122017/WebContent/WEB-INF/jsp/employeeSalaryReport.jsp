@@ -76,7 +76,11 @@ color: white;
 <script src="../Payroll/resources/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-
+	
+	$("#downloadLink").click(function(event) {
+		window.location = "../Payroll/empSalaryRptDownload";
+	});
+	
 	$('#empRptTable').DataTable({
 		"info" : false,
 		"paging" : false,
@@ -86,9 +90,22 @@ $(document).ready(function() {
 	  	"pagingType" : "full"
  	});
 	
-	<c:if test="${sessionScope.employees.size() gt 0}">
+	<c:if test="${sessionScope.empSalaryReport.size() gt 0}">
 		$('#searchDiv').hide();
-	</c:if>	
+	</c:if>
+	
+	$('#modifySearch').click(function(event) {
+		$('#searchDiv').show();
+		$('#closeSearch').show();
+		$('#modifySearch').hide();
+	});
+	
+	$('#closeSearch').click(function(event) {
+		$('#searchDiv').hide();
+		$('#closeSearch').hide();
+		$('#modifySearch').show();
+	});
+	
 });
       </script>
 </head>
@@ -97,9 +114,9 @@ $(document).ready(function() {
 	<div  class="container" class="row" style ="position: relative;">
 	<jsp:include page="../jsp/employeeSearch.jsp" />
 	
-	<c:if test="${sessionScope.employees.size() gt 0}">
+	<c:if test="${sessionScope.empSalaryReport.size() gt 0}">
 	<div class="col-sm-12" style ="width:100%;padding-left:0px;margin-top:0px;margin-left:0px;">
-	<div class="col-sm-4" style ="padding-left:0px;margin-left:0px;"><h6 style="color: #0101DF;margin-bottom:0px;">Employee Information</h6></div> 
+	<div class="col-sm-4" style ="padding-left:0px;margin-left:0px;"><h6 style="color: #0101DF;margin-bottom:0px;">Employee Salary Information</h6></div> 
 	<div class="col-sm-4" style ="text-align:right;">
 	<a id="modifySearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Modify Search</b></a>
 	<a id="closeSearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Close Search</b></a>
@@ -113,42 +130,26 @@ $(document).ready(function() {
 		<thead>
 			<tr>
 			<th>Name</th>
-			<th>Department</th>
-			<th>Head</th>
-			<th>Designation</th>
-			<th>Address</th>
-			<th>Date of Birth</th>
-			<th>Gender</th>
-			<th>Joining Date</th>
-			<th>Phone</th>
-			<th>Email</th>
-			<th>Aadhar Number</th>
-			<th>PAN</th>
-			<th>Year</th>
-			<th>Basic Pay</th>
+			<th>Basic</th>
 			<th>Grade Pay</th>
-			<th>Scale Pay</th>
-			<th>Scale Increment</th>
+			<th>CA</th>
+			<th>UFA</th>
+			<th>FPA</th>
+			<th>TA</th>
+			<th>HRA Flag</th>
+			<th>PF Flag</th>
 			</tr></thead>
-			<c:forEach var="employee" items="${sessionScope.employees}">
+			<c:forEach var="employee" items="${sessionScope.empSalaryReport}">
 			<tr>
 			<td> ${employee.fullName} </td>
-			<td> ${employee.department}</td>
-			<td> ${employee.headName}</td>
-			<td> ${employee.designation}</td>
-			<td> ${employee.address}</td>
-			<td> ${employee.dob} </td>
-			<td> ${employee.gender}</td>
-			<td> ${employee.joiningDate}</td>
-			<td> ${employee.phone}</td>
-			<td> ${employee.email}</td>
-			<td> ${employee.adharNo} </td>
-			<td> ${employee.pan} </td>
-			<td> ${employee.salaryVo.year}</td>
-			<td> ${employee.salaryVo.basic}</td>
-			<td> ${employee.salaryVo.gradePay}</td>
-			<td> ${employee.salaryVo.scalePay}</td>
-			<td> ${employee.salaryVo.scaleInc}</td>
+			<td> ${employee.basic}</td>
+			<td> ${employee.gradePay}</td>
+			<td> ${employee.ca}</td>
+			<td> ${employee.ufa}</td>
+			<td> ${employee.fpa} </td>
+			<td> ${employee.ta}</td>
+			<td> ${employee.hraFlag}</td>
+			<td> ${employee.pfFlag}</td>
 			</tr>
 			</c:forEach>
 		</table>
