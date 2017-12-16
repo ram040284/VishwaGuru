@@ -45,6 +45,8 @@ public class EmployeeReportController {
 	   request.getSession().setAttribute("departments", depJSON);
 	   
 	   SearchCriteria employee = new SearchCriteria();
+	   request.getSession().setAttribute("reportName", "Employee Information");
+	   request.getSession().setAttribute("recordsSize", 0);
 	   employee.setSearchType("employeeReport");
 	   ModelAndView model = new ModelAndView("employeeReport", "command", employee);
 	   model.addObject("search", employee);
@@ -67,6 +69,8 @@ public class EmployeeReportController {
 	   request.getSession().setAttribute("departments", depJSON);
 	   
 	   SearchCriteria employee = new SearchCriteria();
+	   request.getSession().setAttribute("reportName", "Employee Salary Information");
+	   request.getSession().setAttribute("recordsSize", 0);
 	   employee.setSearchType("empSalaryReport");
 	   ModelAndView model = new ModelAndView("employeeSalaryReport", "command", employee);
 	   model.addObject("search", employee);
@@ -89,7 +93,8 @@ public class EmployeeReportController {
 	   } else {
 		   employees = employeesList;
 	   }
-
+	   request.getSession().setAttribute("reportName", "Employee Information");
+	   request.getSession().setAttribute("recordsSize", employees.size());
 	   request.getSession().setAttribute("employees", employees);
 	   ModelAndView model = new ModelAndView("employeeReport", "command", search);
 	   model.addObject("search", search);
@@ -116,6 +121,8 @@ public class EmployeeReportController {
 	   System.out.println("Salary Report Size:" + employees.size());
 
 	   request.getSession().setAttribute("empSalaryReport", employees);
+	   request.getSession().setAttribute("reportName", "Employee Salary Information");
+	   request.getSession().setAttribute("recordsSize", employees.size());
 	   ModelAndView model = new ModelAndView("employeeSalaryReport", "command", search);
 	   model.addObject("search", search);
 	   return model;
@@ -190,5 +197,12 @@ public class EmployeeReportController {
 	   os.write(fileContent.toString().getBytes());
 	   os.flush();
 	   os.close();
+   }
+   
+   @RequestMapping(value="/printTemplate",method=RequestMethod.GET)
+	public ModelAndView getEmployeesSearch(){
+	   
+	   ModelAndView model = new ModelAndView("printTemplate");
+	   return model;
    }
 }	

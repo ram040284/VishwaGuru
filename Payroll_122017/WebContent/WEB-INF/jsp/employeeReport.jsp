@@ -4,8 +4,6 @@
 <html>
 <head>
 <title>Reports</title>
-
-<%-- <link href="../Payroll/resources/css/jquery.dataTables.min.css" rel="stylesheet"/> --%>
 <link href="../Payroll/resources/css/dataTables.bootstrap.min.css" rel="stylesheet"/>
 <style type="text/css">
 select {
@@ -76,7 +74,10 @@ color: white;
 <script src="../Payroll/resources/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-
+	$("#downloadLink").click(function(event) {
+		window.location = "../Payroll/employeeRptDownload";
+	});
+	
 	$('#empRptTable').DataTable({
 		"info" : false,
 		"paging" : false,
@@ -86,28 +87,20 @@ $(document).ready(function() {
 	  	"pagingType" : "full"
  	});
 	
-	<c:if test="${sessionScope.employees.size() gt 0}">
-		$('#searchDiv').hide();
-	</c:if>	
+	$('#searchBtn').click(function(event) {
+		$("#formSearch").attr("action", "../Payroll/employeeReport");
+		$("#formSearch").submit();
+	});
 });
       </script>
 </head>
 <body >
 	<div class="contain-wrapp bodyDivCss">	
-	<div  class="container" class="row" style ="position: relative;">
+	
 	<jsp:include page="../jsp/employeeSearch.jsp" />
 	
 	<c:if test="${sessionScope.employees.size() gt 0}">
-	<div class="col-sm-12" style ="width:100%;padding-left:0px;margin-top:0px;margin-left:0px;">
-	<div class="col-sm-4" style ="padding-left:0px;margin-left:0px;"><h6 style="color: #0101DF;margin-bottom:0px;">Employee Information</h6></div> 
-	<div class="col-sm-4" style ="text-align:right;">
-	<a id="modifySearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Modify Search</b></a>
-	<a id="closeSearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Close Search</b></a>
-	</div><div class="col-sm-2" ></div>
-	<div class="col-sm-2" style ="text-align:right;">
-	<a id="downloadLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Download</b></a>
-	<a id="printLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;"><b>Print</b></a></div>
-	</div>
+	<div  class="container" class="row" style ="position: relative;">
 	<div id="empListDiv" style ="width:100%;overflow-x: auto;overflow-y: auto;min-height:10px;max-height:380px;">
 		<table id="empRptTable" class="rptTblClass table table-striped table-bordered table-hover table-responsive">
 		<thead>
@@ -153,12 +146,10 @@ $(document).ready(function() {
 			</c:forEach>
 		</table>
 		</div>
+		</div>
 	</c:if>
 	</div>			
-	</div>
-
-	<iframe id="empRptFrame" name="empRptFrame" src="javascript:false" style="display:none;">
-	</iframe>
+	
 	<jsp:include page="../jsp/public/postFooter.jsp" />
 </body>
 </html>

@@ -90,20 +90,9 @@ $(document).ready(function() {
 	  	"pagingType" : "full"
  	});
 	
-	<c:if test="${sessionScope.empSalaryReport.size() gt 0}">
-		$('#searchDiv').hide();
-	</c:if>
-	
-	$('#modifySearch').click(function(event) {
-		$('#searchDiv').show();
-		$('#closeSearch').show();
-		$('#modifySearch').hide();
-	});
-	
-	$('#closeSearch').click(function(event) {
-		$('#searchDiv').hide();
-		$('#closeSearch').hide();
-		$('#modifySearch').show();
+	$('#searchBtn').click(function(event) {
+		$("#formSearch").attr("action", "../Payroll/empSalaryReport");
+		$("#formSearch").submit();
 	});
 	
 });
@@ -111,20 +100,11 @@ $(document).ready(function() {
 </head>
 <body >
 	<div class="contain-wrapp bodyDivCss">	
-	<div  class="container" class="row" style ="position: relative;">
+	
 	<jsp:include page="../jsp/employeeSearch.jsp" />
 	
 	<c:if test="${sessionScope.empSalaryReport.size() gt 0}">
-	<div class="col-sm-12" style ="width:100%;padding-left:0px;margin-top:0px;margin-left:0px;">
-	<div class="col-sm-4" style ="padding-left:0px;margin-left:0px;"><h6 style="color: #0101DF;margin-bottom:0px;">Employee Salary Information</h6></div> 
-	<div class="col-sm-4" style ="text-align:right;">
-	<a id="modifySearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Modify Search</b></a>
-	<a id="closeSearch" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Close Search</b></a>
-	</div><div class="col-sm-2" ></div>
-	<div class="col-sm-2" style ="text-align:right;">
-	<a id="downloadLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;margin-right:15px;"><b>Download</b></a>
-	<a id="printLink" href="javascript:void(0)" style="color: #0101DF;text-decoration: underline;"><b>Print</b></a></div>
-	</div>
+	<div  class="container" class="row" style ="position: relative;">
 	<div id="empListDiv" style ="width:100%;overflow-x: auto;overflow-y: auto;min-height:10px;max-height:380px;">
 		<table id="empRptTable" class="rptTblClass table table-striped table-bordered table-hover table-responsive">
 		<thead>
@@ -154,12 +134,10 @@ $(document).ready(function() {
 			</c:forEach>
 		</table>
 		</div>
+		</div>
 	</c:if>
-	</div>			
 	</div>
 
-	<iframe id="empRptFrame" name="empRptFrame" src="javascript:false" style="display:none;">
-	</iframe>
 	<jsp:include page="../jsp/public/postFooter.jsp" />
 </body>
 </html>
