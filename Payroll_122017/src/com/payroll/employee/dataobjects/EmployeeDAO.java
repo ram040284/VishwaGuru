@@ -56,6 +56,8 @@ public class EmployeeDAO {
 				query.setParameter("lname", "%"+name+"%");
 			}
 			employeeList = query.list();
+			if(!employeeList.isEmpty())
+				System.out.println("Size:"+employeeList.size());
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
@@ -72,8 +74,8 @@ public class EmployeeDAO {
 			//String queryString = " from Employee";
 			String queryString = " select new com.payroll.employee.vo.EmployeeVO(e.employeeId, e.firstName, "
 					+ "e.lastName, e.middleName) from Employee e where e.status = ? and e.employeeId = "
-					+ "(select eDept.employeeId from EmpDepartment eDept where eDept.employeeId=e.employeeId and eDept.departmentId = ? ) and "
-					+ "e.employeeId = (select eDesg.employeeId from EmpDesignation eDesg where eDesg.employeeId=e.employeeId and "
+					+ "(select eDept.employeeId from EmpDepartment eDept where eDept.employee.employeeId=e.employeeId and eDept.department.departmentId = ? ) and "
+					+ "e.employeeId = (select eDesg.employee.employeeId from EmpDesignation eDesg where eDesg.employeeId=e.employeeId and "
 					+ " eDesg.designationId = ? and eDesg.lastWokingDate is null)";		
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
@@ -87,6 +89,24 @@ public class EmployeeDAO {
 			HibernateConnection.closeSession(session);
 		}
 		return employeeList;
+	}
+	
+	public Employee getById(int empId){
+		Session session = null;
+		Employee employee = null;
+		try{
+			String queryString = " from Employee e where e.employeeId = ? and e.status = ?";
+			session = HibernateConnection.getSessionFactory().openSession();
+			Query query = session.createQuery(queryString);
+			query.setParameter(0, empId);
+			query.setParameter(1, "A");
+			employee = (Employee)(!(query.list().isEmpty()) ? query.list().get(0) : null);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			HibernateConnection.closeSession(session);
+		}
+		return employee;
 	}
 	
 	public EmployeeVO getEmployeeById(int empId){
@@ -117,7 +137,7 @@ public class EmployeeDAO {
 	public EmpDesignation getEmpDesignationByIds(int empId, int desgId, Session session){
 		EmpDesignation empDesig = null;
 		try{
-			String queryString = " from EmpDesignation ed where ed.employeeId = ? and ed.designationId = ? and ed.status = ?";
+			String queryString = " from EmpDesignation ed where ed.employee.employeeId = ? and ed.employee.designationId = ? and ed.status = ?";
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
 			query.setParameter(0, empId);
@@ -132,6 +152,26 @@ public class EmployeeDAO {
 		}
 		return empDesig;
 	}
+	
+	public List<EmployeeVO> getEmployeesByDesgId(int desgId){
+		List<EmployeeVO> empList = null;
+		Session session = null;
+		try{
+			String queryString = "select new com.payroll.employee.vo.EmployeeVO(e.employeeId, e.firstName, e.lastName, e.middleName) from Employee e "
+					+ "where e.status = ? and e.employeeId in (select eDesg.employee.employeeId from EmpDesignation eDesg where eDesg.designation.designationId = ?)";
+			session = HibernateConnection.getSessionFactory().openSession();
+			Query query = session.createQuery(queryString);
+			query.setParameter(0, "A");
+			query.setParameter(1, desgId);
+			empList = query.list();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			HibernateConnection.closeSession(session);
+		}
+		return empList;
+	}
+	
 	
 	private EmployeeVO getEmployeeById(int empId, Session session){
 		this.session = session;
@@ -154,13 +194,13 @@ public class EmployeeDAO {
 				System.out.println("Deleted:"+updated);
 				if(updated == 1){
 					EmployeeVO empDB = getEmployeeById(empId, null);
-					Query queryED = session.createQuery("Update EmpDesignation eDesg set eDesg.status = ?, eDesg.rowUpdDate = ? where eDesg.employee.employeeId = ? and eDesg.designationId = ?");
+					Query queryED = session.createQuery("Update EmpDesignation eDesg set eDesg.status = ?, eDesg.rowUpdDate = ? where eDesg.employee.employeeId = ? and eDesg.designation.designationId = ?");
 					queryED.setParameter(0, "S");
 					queryED.setParameter(1, new Timestamp(System.currentTimeMillis()));
 					queryED.setParameter(2, empId);
 					queryED.setParameter(3, empDB.getDesignationId());
 					updated = queryED.executeUpdate();
-					Query queryEDp = session.createQuery("Update EmpDepartment eDept set eDept.status = ?, eDept.rowUpdDate = ? where eDept.employee.employeeId = ? and eDept.departmentId = ?");
+					Query queryEDp = session.createQuery("Update EmpDepartment eDept set eDept.status = ?, eDept.rowUpdDate = ? where eDept.employee.employeeId = ? and eDept.department.departmentId = ?");
 					queryEDp.setParameter(0, "S");
 					queryEDp.setParameter(1, new Timestamp(System.currentTimeMillis()));
 					queryEDp.setParameter(2, empId);
@@ -222,9 +262,12 @@ public class EmployeeDAO {
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
-			Department dept = new DepartmentDAO().getDepartmentById(emp.getDepartmentId());
+			/*Department dept = new DepartmentDAO().getDepartmentById(emp.getDepartmentId());
 			HeadInfo headInfo = new HeadInfoDAO().getHeadInfoById(emp.getHeadId());
-			Designation designation = new DesignationDAO().getDesignationById(emp.getDesignationId());
+			Designation designation = new DesignationDAO().getDesignationById(emp.getDesignationId());*/
+			Department dept = (Department)session.load(Department.class, emp.getDepartmentId());
+			HeadInfo headInfo = (HeadInfo)session.load(HeadInfo.class, emp.getHeadId());
+			Designation designation =(Designation)session.load(Designation.class, emp.getDesignationId());
 			if(emp.getEmployeeId() != 0) {
 				EmployeeVO empDB = getEmployeeById(emp.getEmployeeId());
 				/*if(empDB.getDepartmentId() != emp.getDepartmentId()){

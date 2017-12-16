@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Add Department</title>
+<title>Add Bank Details</title>
 
 <jsp:include page="../jsp/public/postHeader.jsp" />
 <style type="text/css">
@@ -18,33 +18,37 @@ td, th {
 <script type="text/javascript">
 $(document).ready(function() {
 
-	$('#addDeptBtn').click(function(event) { 
-		if($('#departmentId').val()!= "0"){
-			var deptName = "${department.departmantName}";
-			if(deptName == $('#departmantName').val()){
+	$('#addBanksBtn').click(function(event) { 
+		if($('#bankId').val()!= "0"){
+			var bankName = "${bankDetails.bankName}";
+			var ifscCode = "${bankDetails.ifscCode}";
+			if(bankName == $('#bankName').val() && ifscCode == $('#ifscCode').val()){
 				alert('Nothing was changed');
-				$('#departmantName').focus();
+				$('#bankName').focus();
 				return false;
 			}
 		}
-		if($('#departmantName').val().trim() == ""){
-			alert("Department name must be provided!");
-			$('#departmantName').focus();
+		if($('#bankName').val().trim() == ""){
+			alert("Bank Name must be provided!");
+			$('#bankName').focus();
 			return false;
 		}
-		var inputJson = { "departmantName" : $('#departmantName').val(), "departmentId" : $('#departmentId').val()};
+		if($('#ifscCode').val().trim() == ""){
+			alert("IFSC Code must be provided!");
+			$('#bankName').focus();
+			return false;
+		}
+		var inputJson = { "bankName" : $('#bankName').val(), "ifscCode" : $('#ifscCode').val(), "bankId" : $('#bankId').val()};
 	   $.ajax({
-	        url: '../Payroll/addDept',
+	        url: '../Payroll/addBankDetails',
 	        data: JSON.stringify(inputJson),
 	        type: "POST", 
 	        contentType: "application/json;charset=utf-8",
 	        success: function(data){ 
 		        if(data == "Yes"){
-		           	window.location = "../Payroll/viewDept";
+		           	window.location = "../Payroll/viewBankDetails";
 		        }else {
 		        	alert(data);
-		        	<%--$("errMsgDiv").append(data);
-		        	$("errMsgDiv").show();--%>
 		        }
 	        }
 	    });
@@ -55,13 +59,12 @@ $(document).ready(function() {
       </script>
 </head>
 <body>
-<div class="errMsg" id="errMsgDiv"></div>
 	<div class="contain-wrapp bodyDivCss">	
 		<div class="container">
-				
+	
 		<div class="formDiv">
 			<h4 style="color: #fff; padding:14px; background-color: #8B9DC3; text-transform: none;">
-				<c:if test="${department.departmentId != '0'}" >Update</c:if><c:if test="${department.departmentId == '0'}">Add</c:if> Department
+				<c:if test="${bankDetails.bankId != '0'}" >Update</c:if><c:if test="${bankDetails.bankId == '0'}">Add</c:if> Bank Details
 			</h4>
 
 		<div class="col-lg-12 card-block bg-faded" style="padding-bottom: 5px;">
@@ -69,13 +72,17 @@ $(document).ready(function() {
 		<form:form method = "POST" action = "">
 		<div class="col-sm-12">
 			<div class="form-group">
-				<label>Department Name</label>
-				<form:input path="departmantName" id="departmantName" class="form-control"/>
-				<form:input type="hidden" path="departmentId" id="departmentId" />
+				<label>Bank Name</label>
+				<form:input path="bankName" id="bankName" class="form-control"/>
+				<form:input type="hidden" path="bankId" id="bankId" />
+			</div>
+			<div class="form-group">
+				<label>IFSC Code</label>
+				<form:input path="ifscCode" id="ifscCode" class="form-control"/>
 			</div>
 			<div class="row">	
 				<div class="text-right">
-					<button type="button" id="addDeptBtn" class="btn">Submit</button>
+					<button type="button" id="addBanksBtn" class="btn">Submit</button>
 					<button type="reset" class="btn">Reset</button>	
 				</div>	
 			</div>

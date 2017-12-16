@@ -23,9 +23,9 @@ $(document).ready(function() {
 	});--%>
 	
 	var deptId = "${salary.departmentId}";
-	var desgId = "${salary.designationId}";
 	var headId = "${salary.headId}";
-	var empId = "${salary.empId}";
+	var desgId = "${salary.designationId}";
+	var empId = "${salary.employeeId}";
 	$('#departmentId').val(deptId);
 	if(deptId !=0) {
 		getHeadsByDept(deptId, headId);		
@@ -107,7 +107,8 @@ $(document).ready(function() {
 			empIdInput = empId;
 		else
 			empIdInput = $('#employeeId').val();
-		var inputJson = { "empId" : empIdInput, "basic" : $('#basic').val(),  
+		
+		var inputJson = { "employeeId" : empIdInput, "basic" : $('#basic').val(),  
 				"year" : $('#year').val(), "gradePay" : $('#gradePay').val(), 
 				"scalePay": $('#scalePay').val(), "scaleInc": $('#scaleInc').val(), "addUpdate": $('#addUpdate').val()};
 		$.ajax({
@@ -136,7 +137,7 @@ $(document).ready(function() {
 		<div class="container">
 		<div class="formDiv">
 			<h4 style="color: #fff; padding:14px; background-color: #8B9DC3; text-transform: none;">
-				<c:if test="${salary.empId != '0'}" >	Update</c:if><c:if test="${salary.empId == '0'}">Add</c:if> Employee Salary
+				<c:if test="${salary.employeeId != '0'}" >	Update</c:if><c:if test="${salary.employeeId == '0'}">Add</c:if> Employee Salary
 			</h4>
 
 		<div class="col-lg-12 card-block bg-faded" style="margin-bottom: 10px;">
@@ -147,21 +148,21 @@ $(document).ready(function() {
 							<div class="col-sm-4 form-group">
 								<label>Department</label>
 								<select id="departmentId" class="form-control" onchange="getHeads()"
-								<c:if test="${salary.empId != '0'}" >disabled = "disabled" </c:if>>
+								<c:if test="${salary.employeeId != '0'}" >disabled = "disabled" </c:if>>
 									<option value="0">-- Select Department --</option>
 								</select>
 							</div>
 							<div class="col-sm-4 form-group">
 								<label>Head:</label>
 								<select id="headId" class="form-control" onchange="loadDesignations()"
-								<c:if test="${salary.empId != '0'}" > disabled= "disabled" </c:if>>
+								<c:if test="${salary.employeeId != '0'}" > disabled= "disabled" </c:if>>
 								<option value="0">-- Select Head --</option></select>
 							</div>
 							
 							<div class="col-sm-4 form-group">
 								<label>Designation:</label>
 								<select id="designationId" class="form-control" onchange="getEmployees()"
-								<c:if test="${salary.empId != '0'}" >disabled = "disabled" </c:if>>
+								<c:if test="${salary.employeeId != '0'}" >disabled = "disabled" </c:if>>
 									<option value="0">-- Select Designation --</option>
 								</select>
 							</div>
@@ -170,7 +171,7 @@ $(document).ready(function() {
 								<div class="col-sm-6 form-group">
 									<label>Employee:</label>
 									<select id="employeeId" class="form-control"
-									<c:if test="${salary.empId != '0'}" >disabled = "disabled" </c:if>>
+									<c:if test="${salary.employeeId != '0'}" >disabled = "disabled" </c:if>>
 										<option value="0">-- Select Employee --</option>
 									</select>
 								</div>
@@ -200,7 +201,7 @@ $(document).ready(function() {
 								<div class="col-sm-6 form-group">
 									<label>Scale Increment:</label>
 									<form:input path="scaleInc"  id="scaleInc" placeholder="Enter Scale Inc" class="form-control"/>
-									<input type="hidden" name="addUpdate" <c:if test="${salary.empId != '0'}" > value="1" </c:if>/>  
+									<input type="hidden" name="addUpdate" id="addUpdate" <c:if test="${salary.employeeId != '0'}" > value="1" </c:if>/>  
 									
 								</div>
 							</div>

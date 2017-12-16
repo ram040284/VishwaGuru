@@ -78,6 +78,11 @@
 	padding-top:175px;
 	padding-bottom: 50px;
 }
+.errMsg {
+	display: none;
+	font-size: 1.2em;
+	color: red;
+}
  </style>
  <script type="text/javascript">
  	function getList(actionPath) {
@@ -153,9 +158,10 @@
 							<li><a href="portfolio-alt2.html">Option-02</a></li>
 							<li><a href="portfolio-alt3.html">Option-03</a></li> --%>
 							<li><a href="../Payroll/viewDept"> Department</a></li>
-				            <li><a href="../Payroll/viewHeads">Head Details</a></li>
+				            <li><a href="../Payroll/viewHeads">Cost Heads</a></li>
 				            <li><a href="../Payroll/viewDesg">Designation</a></li>
-				            <li><a href="../Payroll/viewConveyance">Conveyance Allowance</a></li>
+				            <li><a href="../Payroll/viewBankDetails">Bank Details</a></li>
+				            <li><a href="../Payroll/viewConveyance">Allowance Details</a></li>
 				           	<li><a href="../Payroll/viewOvertime">Overtime Payment</a></li>
 				           	<li><a href="../Payroll/viewAdvance">Advance Payment</a></li>
 				           	<%--<li><a href="../Payroll/viewPayHead">Pay-Head Details</a></li>
@@ -168,12 +174,13 @@
 						<ul class="dropdown-menu">
 							<%--<li><a href="#" onclick="inputAction('../Payroll/viewEmp')">New Employee</a></li> --%>
 							<li><a href="#" onclick="getList('../Payroll/employee')">Employee Details</a></li>
-							<li><a href="../Payroll/viewBank">Bank Details</a></li>
+							<li><a href="../Payroll/viewBank">Employee Bank</a></li>
+							<li><a href="../Payroll/viewSalary">Employee Salary</a></li>
+							<li><a href="#" onclick="getList('../Payroll/viewLeave')">Employee Leave</a></li>
 							<li><a href="../Payroll/viewEmpPf">Provident Fund</a></li>
 							<li><a href="../Payroll/viewEmpQtr">Quarters Details</a></li>
-							<li><a href="../Payroll/viewSalary">Salary Details</a></li>
 							<li><a href="../Payroll/viewEmpLic">LIC Details</a></li>
-				           	<li><a href="#" onclick="getList('../Payroll/viewLeave')">Leave Details</a></li>
+				           	
 						</ul>
 					</li>
 					<li class="dropdown">
@@ -198,8 +205,7 @@
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Reports <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="../Payroll/employeeSearch">Employee Info</a></li>
-							<li><a href="../Payroll/empSalarySearch">Employee Salary</a></li>
+							<li><a href="../Payroll/employeeSearch">Employee Report</a></li>
 							<%--<li><a href="portfolio-alt2.html">Option-02</a></li>
 							<li><a href="portfolio-alt3.html">Option-03</a></li> --%>
 						</ul>
@@ -282,7 +288,7 @@
 </div>	 --%>
 <form action="" name="inputForm" method="post">
 	
-	</form>
+</form>
 
 <script src="../Payroll/resources/js/jquery-2.0.3.min.js"></script>
     <script src="../Payroll/resources/js/bootstrap.min.js"></script>

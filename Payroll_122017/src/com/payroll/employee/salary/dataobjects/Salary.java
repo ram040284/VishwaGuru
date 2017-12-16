@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.payroll.employee.dataobjects.Employee;
+
 public class Salary implements Serializable{
 	
-	private int empId;
+	private int employeeId;
 	private int year;
 	private double basic;
 	private double gradePay;
@@ -15,13 +17,14 @@ public class Salary implements Serializable{
 	private short addUpdate; // 0 - Add / 1 - update
 	private String status;
 	private Timestamp rowUpdDate;
+	private Employee employee;
 	
 	
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int empId) {
+		this.employeeId = empId;
 	}
 	public int getYear() {
 		return year;
@@ -62,7 +65,7 @@ public class Salary implements Serializable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "employeeId:"+empId+" |  year:"+this.year+" | basic:"+this.basic 
+		return "employeeId:"+employeeId+" |  year:"+this.year+" | basic:"+this.basic 
 				+" | scalePay:"+scalePay+" | scaleInc:"+scaleInc +" | addUpdate:"+addUpdate;
 	}
 	public String getStatus() {
@@ -76,6 +79,12 @@ public class Salary implements Serializable{
 	}
 	public void setRowUpdDate(Timestamp rowUpdDate) {
 		this.rowUpdDate = rowUpdDate;
+	}
+	public Employee getEmployee() {
+		return employee;
+	}
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
 	}
 
 }

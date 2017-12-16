@@ -3,12 +3,16 @@
  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">  
   
  <hibernate-mapping>  
-  <class name="com.payroll.employee.leave.dataobjects.Leave" table="EMP_LEAVE">  
-   <id name="leaveId" type="integer" >  
-     <column name="LEAVE_ID" sql-type="integer" />  
+  <class name="com.payroll.employee.leave.dataobjects.Leave" table="EMP_LEAVE_MASTER">
+  <id name="leaveId" type="integer" >  
+     <column name="LEAVE_ID" sql-type="integer" not-null="true"/>  
+     <generator class="increment"/>
     </id>  
-   <property name="empId" column="EMPID" not-null="true"/>
-     <property name="leaveType" column="LEAVE_TYPE" not-null="true"/> 
+   <many-to-one name="employee"   
+        class="com.payroll.employee.dataobjects.Employee" column="EMP_ID" cascade="all">
+	</many-to-one>
+	
+	<property name="leaveType" column="LEAVE_TYPE" not-null="true"/> 
     <property name="noOfLeaves" column="NO_OF_LEAVES" not-null="true"/> 
     <property name="leaveBalance" column="LEAVE_BAL" not-null="true"/>  
     <property name="status" column="STATUS" not-null="true"/>  

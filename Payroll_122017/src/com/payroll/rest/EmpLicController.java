@@ -16,7 +16,7 @@ import com.payroll.department.dataobjects.Department;
 import com.payroll.designation.business.DesignationService;
 import com.payroll.designation.dataobjects.Designation;
 import com.payroll.employee.bank.business.BankService;
-import com.payroll.employee.bank.dataobjects.Bank;
+import com.payroll.employee.bank.dataobjects.EmpBank;
 import com.payroll.employee.bank.vo.BankVO;
 import com.payroll.employee.lic.business.EmpLicService;
 import com.payroll.employee.lic.vo.EmpLicVO;

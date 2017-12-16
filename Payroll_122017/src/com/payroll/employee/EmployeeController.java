@@ -44,8 +44,8 @@ public class EmployeeController {
 		   deptList.add(new Department(2, "EEE"));
 		   deptList.add(new Department(1, "Mechanical"));*/
 		   
-		   List<Designation> desigList = new DesignationService().getDesignationList();/*new ArrayList<Designation>();
-		   /desigList.add(new Designation(1, "Chairman"));
+		   //List<Designation> desigList = new DesignationService().getDesignationList();/*new ArrayList<Designation>();
+		   /*desigList.add(new Designation(1, "Chairman"));
 		   desigList.add(new Designation(2, "Vise Chairman"));
 		   desigList.add(new Designation(3, "Staff"));*/
 		   
@@ -53,13 +53,13 @@ public class EmployeeController {
 		   String desigJSON = "";
 			try {
 				depJSON = mapper.writeValueAsString(deptList);
-				desigJSON = mapper.writeValueAsString(desigList);
+				//desigJSON = mapper.writeValueAsString(desigList);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			ModelAndView model = new ModelAndView("employee");
 			model.addObject("departments", depJSON);
-			model.addObject("designations", desigJSON);
+			//model.addObject("designations", desigJSON);
 		 
 			return model;
 	   }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.payroll.HibernateConnection;
 import com.payroll.employee.dataobjects.Employee;
@@ -19,11 +20,11 @@ public class DepartmentDAO {
 		Transaction transaction = null;
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
-			boolean exist = nameExist(dept.getDepartmantName(), session);
+			/*boolean exist = nameExist(dept.getDepartmantName(), session);
 			if(exist){
 				result = "Given Department name already exist!";
 				return result;
-			}
+			}*/
 			transaction = session.beginTransaction();
 			if(dept.getDepartmentId() != 0){
 				dept.setStatus("A");
@@ -39,6 +40,10 @@ public class DepartmentDAO {
 			result = "Yes";
 			transaction.commit();
 			
+		}catch(ConstraintViolationException cv){
+			cv.printStackTrace();
+			transaction.rollback();
+			result = "Given Department details already exist!";
 		}catch(Exception e){
 			e.printStackTrace();
 			transaction.rollback();
@@ -121,11 +126,12 @@ public class DepartmentDAO {
 		Session session = null;
 		
 		try{
-			String queryString = " from Department d where d.departmentId = ? ";
+			String queryString = " from Department d where d.departmentId = ? and d.status = ?";
 					
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
 			query.setParameter(0, deptId);
+			query.setParameter(1, "A");
 			department = (Department)(!(query.list().isEmpty())?query.list().get(0) : null);
 		}catch(Exception e){
 			e.printStackTrace();

@@ -5,7 +5,14 @@ public class SearchCriteria {
 	private int departmentId;
 	private int headId;
 	private String firstName;
-	private String searchType;
+	
+	public SearchCriteria(){
+		
+	}
+	public SearchCriteria(int departmentId, int headId){
+		this.departmentId = departmentId;
+		this.headId = headId;
+	}
 	
 	public int getDepartmentId() {
 		return departmentId;
@@ -25,11 +32,12 @@ public class SearchCriteria {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	public String getSearchType() {
-		return searchType;
-	}
-	public void setSearchType(String searchType) {
-		this.searchType = searchType;
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "departmentId:"+departmentId+" |  headId:"+this.headId;
 	}
 
+	
 }

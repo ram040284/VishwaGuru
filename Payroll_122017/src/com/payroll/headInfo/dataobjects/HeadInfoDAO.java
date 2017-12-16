@@ -7,6 +7,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
+
 import com.payroll.HibernateConnection;
 import com.payroll.department.dataobjects.Department;
 import com.payroll.department.dataobjects.DepartmentDAO;
@@ -114,11 +116,13 @@ public class HeadInfoDAO {
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
-			if(checkHead(headInfo.getDepartmentId(), headInfo.getHeadName(), session) != null){
+			/*if(checkHead(headInfo.getDepartmentId(), headInfo.getHeadName(), session) != null){
 				result = "Head details are exist for selected Department!";
 				return result;
-			}
-			Department dept = new DepartmentDAO().getDepartmentById(headInfo.getDepartmentId());
+			}*/
+			//Department dept = new DepartmentDAO().getDepartmentById(headInfo.getDepartmentId());
+			Department dept = (Department)session.load(Department.class, headInfo.getDepartmentId());
+			System.out.println("Dept:"+dept);
 			if(headInfo.getHeadId() != 0){
 				headInfo.setDepartment(dept);
 				headInfo.setStatus("A");
@@ -139,6 +143,10 @@ public class HeadInfoDAO {
 			}
 			transaction.commit();
 			result = "Yes";
+		}catch(ConstraintViolationException cv){
+			cv.printStackTrace();
+			transaction.rollback();
+			result = "The Cost Head is already exist in selected Department!";
 		}catch(Exception e){
 			e.printStackTrace();
 			transaction.rollback();

@@ -26,7 +26,7 @@ $(document).ready(function() {
 	if(headId != 0) {
 		loadDesgByHead(headId, desgId);
 	}
-	var empId = "${leave.empId}";
+	var empId = "${leave.employeeId}";
 	$('#departmentId').val(deptId);
 	$('#leaveIds').val(leaveIds);
 	<%--$('#designationId').val(desgId);
@@ -99,7 +99,7 @@ $(document).ready(function() {
 		else
 			empIdInput = $('#employeeId').val();
 		
-		var inputJson = { "empId" : empIdInput, "sickLeaveInp" : $('#sickLeaveInp').val(),  
+		var inputJson = { "employeeId" : empIdInput, "sickLeaveInp" : $('#sickLeaveInp').val(),  
 				"casualLeaveInp" : $('#casualLeaveInp').val(), "paidLeaveInp" : $('#paidLeaveInp').val(), "leaveIds": $('#leaveIds').val()};
 		$.ajax({
 	        url: '../Payroll/addLeave',
@@ -109,7 +109,10 @@ $(document).ready(function() {
 	        success: function(data){ 
 	            if(data == "Yes"){
 	            	<%--window.location = "../Payroll/viewLeave";--%>
-	            	var f = document.forms['leaveForm'];
+	            	var f = document.forms['leaveInputForm'];
+	            	var submittedForm = document.forms['leaveForm'];
+	            	f.departmentId.value = submittedForm.departmentId.value;
+	            	f.headId.value = submittedForm.headId.value;
 	            	f.action="../Payroll/viewLeave";
 	            	f.submit();
 	            }else {
@@ -128,25 +131,25 @@ $(document).ready(function() {
 		<div class="container">
 		<div class="formDiv">
 			<h4 style="color: #fff; padding:14px; background-color: #8B9DC3; text-transform: none;">
-				<c:if test="${leave.empId != '0'}" >	Update</c:if><c:if test="${leave.empId == '0'}">Add</c:if> Employee Leave
+				<c:if test="${leave.employeeId != '0'}" >	Update</c:if><c:if test="${leave.employeeId == '0'}">Add</c:if> Employee Leave
 			</h4>
 
 		<div class="col-lg-12 card-block bg-faded" style="margin-bottom: 10px;">
 			<div class="row">
-				<form:form method = "POST" action = "" name="leaveForm">
+				<form:form method = "POST" action ="" name="leaveForm">
 					<div class="col-sm-12">
 						<div class="row">
 							<div class="col-sm-6 form-group">
 								<label>Department</label>
-								<select id="departmentId" class="form-control" onchange="getHeads()"
-								<c:if test="${leave.empId != '0'}" >disabled = "disabled" </c:if>>
+								<select id="departmentId" name="departmentId" class="form-control" onchange="getHeads()"
+								<c:if test="${leave.employeeId != '0'}" >disabled = "disabled" </c:if>>
 									<option value="0">-- Select Department --</option>
 								</select>
 							</div>
 							<div class="col-sm-6 form-group">
 								<label>Head:</label>
-								<select id="headId" class="form-control" onchange="loadDesignations()"
-								<c:if test="${leave.empId != '0'}" > disabled= "disabled" </c:if>>
+								<select id="headId" name="headId" class="form-control" onchange="loadDesignations()"
+								<c:if test="${leave.employeeId != '0'}" > disabled= "disabled" </c:if>>
 								<option value="0">-- Select Head --</option></select>
 							</div>
 							</div>
@@ -154,14 +157,14 @@ $(document).ready(function() {
 								<div class="col-sm-6 form-group">
 								<label>Designation:</label>
 								<select id="designationId" class="form-control" onchange="getEmployees()"
-								<c:if test="${leave.empId != '0'}" >disabled = "disabled" </c:if>>
+								<c:if test="${leave.employeeId != '0'}" >disabled = "disabled" </c:if>>
 									<option value="0">-- Select Designation --</option>
 								</select>
 							</div>
 							
 								<div class="col-sm-6 form-group">
 									<label>Employee:</label>
-									<select id="employeeId" class="form-control" <c:if test="${leave.empId != '0'}" >disabled = "disabled" </c:if>>
+									<select id="employeeId" class="form-control" <c:if test="${leave.employeeId != '0'}" >disabled = "disabled" </c:if>>
 										<option value="0">-- Select Employee --</option>
 									</select>
 								</div>
@@ -190,15 +193,15 @@ $(document).ready(function() {
 							</div>--%>
 							<div class="row">
 									<div class="col-sm-4 form-group">
-										<label>Sick Leaves: <c:if test="${leave.empId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.sickLeaves}"/></span></c:if> </label>
+										<label>Sick Leaves: <c:if test="${leave.employeeId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.sickLeaves}"/></span></c:if> </label>
 										<form:input path="sickLeaveInp"  id="sickLeaveInp" class="form-control"/>
 									</div>
 									<div class="col-sm-4 form-group">
-										<label>Casual Leaves: <c:if test="${leave.empId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.casualLeaves}"/></span></c:if></label>
+										<label>Casual Leaves: <c:if test="${leave.employeeId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.casualLeaves}"/></span></c:if></label>
 										<form:input path="casualLeaveInp"  id="casualLeaveInp" class="form-control"/>
 									</div>
 									<div class="col-sm-4 form-group">
-										<label>Paid Leave: <c:if test="${leave.empId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.paidLeaves}"/></span></c:if></label>
+										<label>Paid Leave: <c:if test="${leave.employeeId != '0'}" ><span style="color: #0101DF; margin-left: 10px;">Avl. Bal:<c:out value="${leave.paidLeaves}"/></span></c:if></label>
 										<form:input path="paidLeaveInp"  id="paidLeaveInp" class="form-control"/>
 									</div>
 									
@@ -219,6 +222,11 @@ $(document).ready(function() {
 	</div>
 	</div>
 	</div>
+	<form action="" name="leaveInputForm" method="post">
+		<input type="hidden" name="headId" value="0">
+		<input type="hidden" name="departmentId" value="0">
+		
+	</form>
 	<jsp:include page="../jsp/public/postFooter.jsp" />
 </body>
 </html>

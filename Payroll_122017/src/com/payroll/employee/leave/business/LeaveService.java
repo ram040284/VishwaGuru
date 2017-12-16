@@ -35,11 +35,11 @@ public class LeaveService {
 		List<LeaveVO> leaveList = getEmpLeaves(new LeaveDAO().getEmpLeave(empId));
 		if(!leaveList.isEmpty() && leaveDBVO !=null){
 			LeaveVO empLeaveVO = leaveList.get(0);
-			System.out.println("EmpID:"+leaveDBVO.getEmpId());
+			System.out.println("EmpID:"+leaveDBVO.getEmployeeId());
 			System.out.println("Dept ID:"+leaveDBVO.getDepartmentId());
 			System.out.println("DesgId:"+leaveDBVO.getDesignationId());
 			System.out.println("headId:"+leaveDBVO.getHeadId());
-			empLeave = new LeaveVO(leaveDBVO.getEmpId(), leaveDBVO.getDepartmentId(), leaveDBVO.getDesignationId(), 
+			empLeave = new LeaveVO(leaveDBVO.getEmployeeId(), leaveDBVO.getDepartmentId(), leaveDBVO.getDesignationId(), 
 					leaveDBVO.getHeadId(), empLeaveVO.getSickLeaves(), empLeaveVO.getCasualLeaves(), 
 					empLeaveVO.getPaidLeaves(), empLeaveVO.getLeaveBalance(), empLeaveVO.getLeaveIds());
 		}
@@ -70,7 +70,7 @@ public class LeaveService {
 		}
 		if(leaveVO.getCasualLeaveInp() != 0){
 			Leave leave = new Leave();
-			leave.setEmpId(leaveVO.getEmpId());
+			leave.setEmployeeId(leaveVO.getEmployeeId());
 			leave.setLeaveType("Casual Leave");
 			leave.setNoOfLeaves(leaveVO.getCasualLeaveInp());
 			leave.setLeaveId(clId);
@@ -78,7 +78,7 @@ public class LeaveService {
 		}
 		if(leaveVO.getSickLeaveInp() != 0){
 			Leave leave = new Leave();
-			leave.setEmpId(leaveVO.getEmpId());
+			leave.setEmployeeId(leaveVO.getEmployeeId());
 			leave.setLeaveType("Sick Leave");
 			leave.setNoOfLeaves(leaveVO.getSickLeaveInp());
 			leave.setLeaveId(slId);
@@ -86,7 +86,7 @@ public class LeaveService {
 		}
 		if(leaveVO.getPaidLeaveInp() != 0){
 			Leave leave = new Leave();
-			leave.setEmpId(leaveVO.getEmpId());
+			leave.setEmployeeId(leaveVO.getEmployeeId());
 			leave.setLeaveType("Paid Vacation");
 			leave.setNoOfLeaves(leaveVO.getPaidLeaveInp());
 			leave.setLeaveId(plId);
@@ -112,11 +112,11 @@ public class LeaveService {
 		for (Iterator iterator = leaves.iterator(); iterator.hasNext();) {
 			LeaveVO leave = (LeaveVO) iterator.next();
 			if(empId == 0)
-				empId = leave.getEmpId();
-			if(empId != leave.getEmpId()){
+				empId = leave.getEmployeeId();
+			if(empId != leave.getEmployeeId()){
 				System.out.println("empId:"+empId+" -- leaveIds:"+leaveIds.toString());
 				empLeaves.add(new LeaveVO(empId, empName, cLeave, pLeave, sLeave, leaveIds.toString()));
-				empId = leave.getEmpId();
+				empId = leave.getEmployeeId();
 				sLeave = 0; cLeave = 0; pLeave = 0;
 				empName = null;
 				leaveIds = new StringBuffer("");

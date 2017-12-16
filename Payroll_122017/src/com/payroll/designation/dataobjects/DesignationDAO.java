@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.payroll.HibernateConnection;
 import com.payroll.department.dataobjects.Department;
@@ -130,12 +131,14 @@ public class DesignationDAO {
 				result = "Desingation already exist!";
 				return result;
 			}*/
-			if(desgExist(desg.getDesignationName(), desg.getHeadId(), session)){
+			/*if(desgExist(desg.getDesignationName(), desg.getHeadId(), session)){
 				result = "Desingation is exist for selected Head!";
 				return result;
-			}
-			Department dept = new DepartmentDAO().getDepartmentById(desg.getDepartmentId());
-			HeadInfo headInfo = new HeadInfoDAO().getHeadInfoById(desg.getHeadId());
+			}*/
+			/*Department dept = new DepartmentDAO().getDepartmentById(desg.getDepartmentId());
+			HeadInfo headInfo = new HeadInfoDAO().getHeadInfoById(desg.getHeadId());*/
+			Department dept = (Department)session.load(Department.class, desg.getDepartmentId());
+			HeadInfo headInfo = (HeadInfo)session.load(HeadInfo.class, desg.getHeadId());
 			desg.setDepartment(dept);
 			desg.setHeadInfo(headInfo);
 			transaction = session.beginTransaction();
@@ -158,6 +161,10 @@ public class DesignationDAO {
 			transaction.commit();
 			result = "Yes";
 		
+		}catch(ConstraintViolationException cv){
+			cv.printStackTrace();
+			transaction.rollback();
+			result = "The Designation is already exist in selected Cost Head!";
 		}catch(Exception e){
 			e.printStackTrace();
 			transaction.rollback();

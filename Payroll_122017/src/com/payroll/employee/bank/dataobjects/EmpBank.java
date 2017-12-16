@@ -4,22 +4,27 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class Bank implements Serializable{
+import com.payroll.bank.dataobjects.BankDetails;
+import com.payroll.employee.dataobjects.Employee;
+
+public class EmpBank implements Serializable{
 	
-	private int empId;
+	private int employeeId;
 	private String bankName;
 	private String ifscCode;
 	private String accountNo;
 	private short addUpdate; // 0 - Add / 1 - update
 	private String status;
 	private Timestamp rowUpdDate;
+	private Employee employee;
+	private BankDetails bankDetails;
+	private int bankId;
 	
-	
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int empId) {
+		this.employeeId = empId;
 	}
 	public String getBankName() {
 		return bankName;
@@ -61,8 +66,26 @@ public class Bank implements Serializable{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "employeeId:"+empId+" |  bankName:"+this.bankName+" | accountNo:"+this.accountNo 
+		return "employeeId:"+employeeId+" |  bankName:"+this.bankName+" | accountNo:"+this.accountNo 
 				+" | ifscCode:"+ifscCode+" | addUpdate:"+addUpdate;
+	}
+	public Employee getEmployee() {
+		return employee;
+	}
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+	public BankDetails getBankDetails() {
+		return bankDetails;
+	}
+	public void setBankDetails(BankDetails bankDetails) {
+		this.bankDetails = bankDetails;
+	}
+	public int getBankId() {
+		return bankId;
+	}
+	public void setBankId(int bankId) {
+		this.bankId = bankId;
 	}
 
 	

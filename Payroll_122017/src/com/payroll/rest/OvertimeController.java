@@ -72,7 +72,7 @@ public class OvertimeController {
 	@RequestMapping(value="/loadEmployees",method=RequestMethod.POST, produces = "application/json")
 	public @ResponseBody List<EmployeeVO> loadEmployees(@RequestBody Overtime overtime){
 	   System.out.println("overtime:"+overtime);
-	   List<EmployeeVO> employees = new EmployeeService().getEmployees(overtime.getDepartmentId(), overtime.getDesignationId());
+	   List<EmployeeVO> employees = new EmployeeService().getEmployees(overtime.getDesignationId());
 	   return employees;
 	}
 	

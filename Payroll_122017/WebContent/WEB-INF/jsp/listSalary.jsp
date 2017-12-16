@@ -19,7 +19,7 @@
                 			.append($('<td/>').text(salary.gradePay))
                 			.append($('<td/>').text(salary.scalePay))
                 			.append($('<td/>').text(salary.scaleInc))
-                			.append($('<td/>').append('<a href="#" onclick=viewSalary('+salary.empId+')><img src="../Payroll/resources/images/edit.png" alt="Edit" class="listImg"/></a><a href="#" onclick=deleteSalary('+salary.empId+')><img src="../Payroll/resources/images/delete.png" alt="Delete" class="listImg"/></a>'));
+                			.append($('<td/>').append('<a href="#" onclick=viewSalary('+salary.employeeId+')><img src="../Payroll/resources/images/edit.png" alt="Edit" class="listImg"/></a><a href="#" onclick=deleteSalary('+salary.employeeId+')><img src="../Payroll/resources/images/delete.png" alt="Delete" class="listImg"/></a>'));
                 	  
                   });
                   
@@ -27,8 +27,8 @@
           });
       }
       function viewSalary(id){
-    	  var f = document.forms[0];
-		  f.empId.value=id;
+    	  var f = document.forms['editForm'];
+		  f.employeeId.value=id;
 		  f.action="../Payroll/inputSalary";
 		  f.submit();
 	  }
@@ -39,8 +39,8 @@
 	  }
       function deleteSalary(id){
     	  if(confirm("Are you sure want to delete Employee Salary?")){
-    		  var f = document.forms[0];
-    		  f.empId.value=id;
+    		  var f = document.forms['editForm'];
+    		  f.employeeId.value=id;
     		  f.action="../Payroll/deleteSalary";
     		  f.submit();
     	  }
@@ -80,7 +80,7 @@
 	<form action="" name="editForm" method="post">
 		<%--<input type="hidden" name="designationId" value="0">
 		<input type="hidden" name="departmentId" value="0"> --%>
-		<input type="hidden" name="empId" value="0">
+		<input type="hidden" name="employeeId" value="0">
 	</form>
 	<jsp:include page="../jsp/public/postFooter.jsp" />
 </body>

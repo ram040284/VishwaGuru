@@ -16,14 +16,14 @@
                 			.append($('<td/>').text(bank.bankName))
                 			.append($('<td/>').text(bank.ifscCode))
                 			.append($('<td/>').text(bank.accountNo))
-                			.append($('<td/>').append('<a href="#" onclick=viewBank('+bank.empId+')><img src="../Payroll/resources/images/edit.png" alt="Edit" class="listImg"/></a><a href="#" onclick=deleteBank('+bank.empId+')><img src="../Payroll/resources/images/delete.png" alt="Delete" class="listImg"/></a>'));
+                			.append($('<td/>').append('<a href="#" onclick="viewBank('+bank.employeeId+')"><img src="../Payroll/resources/images/edit.png" alt="Edit" class="listImg"/></a><a href="#" onclick=deleteBank('+bank.employeeId+')><img src="../Payroll/resources/images/delete.png" alt="Delete" class="listImg"/></a>'));
                   });
               }
           });
       }
-      function viewBank(id, leaveId){
-    	  var f = document.forms[0];
-		  f.empId.value=id;
+      function viewBank(id){
+    	  var f = document.forms['editForm'];
+		  f.employeeId.value=id;
 		  f.action="../Payroll/inputBank";
 		  f.submit();
 	  }
@@ -35,7 +35,7 @@
       function deleteBank(id){
     	  if(confirm("Are you sure want to delete Employee Bank?")){
     		  var f = document.forms['editForm'];
-    		  f.empId.value=id;
+    		  f.employeeId.value=id;
     		  f.action="../Payroll/deleteBank";
     		  f.submit();
     	  }
@@ -68,7 +68,7 @@
 	</div>
 	</div>
 	<form action="" name="editForm" method="post">
-		<input type="hidden" name="empId" value="0">
+		<input type="hidden" name="employeeId" value="0">
 	</form>
 	<jsp:include page="../jsp/public/postFooter.jsp" />
 </body>

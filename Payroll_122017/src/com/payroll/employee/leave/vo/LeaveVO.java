@@ -5,7 +5,7 @@ import com.payroll.employee.SearchCriteria;
 
 public class LeaveVO extends SearchCriteria{
 	
-	private int empId;
+	private int employeeId;
 	private int leaveId;
 	private String leaveType;
 	private int noOfLeaves;
@@ -23,10 +23,12 @@ public class LeaveVO extends SearchCriteria{
 	private int paidLeaveInp;
 	private int sickLeaveInp;
 	
-	public LeaveVO(){}
+	public LeaveVO(){
+		super();
+	}
 	
 	public LeaveVO(int empId, String fName, String lName, int leaveId, String leaveType, int noOfLeaves, int leaveBalance){
-		this.empId = empId;
+		this.employeeId = empId;
 		this.leaveId = leaveId;
 		this.leaveBalance = leaveBalance;
 		this.noOfLeaves = noOfLeaves;
@@ -39,21 +41,23 @@ public class LeaveVO extends SearchCriteria{
 	
 	public LeaveVO (int empId, int deptId, int desgId, int headId, int leaveId, String leaveType,
 			int noOfLeaves, int leaveBalance){
-		this.empId = empId;
-		this.departmentId = deptId;
+		super(deptId, headId);
+		this.employeeId = empId;
+		//this.departmentId = deptId;
 		this.designationId = desgId;
 		this.leaveBalance = leaveBalance;
 		this.noOfLeaves = noOfLeaves;
 		this.leaveType = leaveType;
 		this.leaveId = leaveId;
-		this.headId = headId;
+		//this.headId = headId;
+		
 	}
 	
 	public LeaveVO(int empId, String empName, int cLeave, int pLeave, int sLeave, String leaveIds){
 		this.casualLeaves = cLeave;
 		this.sickLeaves = sLeave;
 		this.paidLeaves = pLeave;
-		this.empId =empId;
+		this.employeeId =empId;
 		this.fullName = empName;
 		this.leaveBalance = casualLeaves + sickLeaves + paidLeaves;
 		this.leaveIds = leaveIds;
@@ -61,11 +65,12 @@ public class LeaveVO extends SearchCriteria{
 	}
 	public LeaveVO (int empId, int deptId, int desgId, int headId, int sLeave, int cLeave, int pLeave,
 			int leaveBalance, String leaveIds){
-		this.empId = empId;
-		this.departmentId = deptId;
+		super(deptId, headId);
+		this.employeeId = empId;
+		//this.departmentId = deptId;
 		this.designationId = desgId;
 		this.leaveBalance = leaveBalance;
-		this.headId = headId;
+		//this.headId = headId;
 		this.casualLeaves = cLeave;
 		this.sickLeaves = sLeave;
 		this.paidLeaves = pLeave;
@@ -73,8 +78,8 @@ public class LeaveVO extends SearchCriteria{
 	}
 	
 
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
 
 	public int getLeaveId() {
@@ -96,15 +101,6 @@ public class LeaveVO extends SearchCriteria{
 	public String getFullName() {
 		return fullName;
 	}
-
-	public int getDepartmentId() {
-		return departmentId;
-	}
-
-	public void setDepartmentId(int departmentId) {
-		this.departmentId = departmentId;
-	}
-
 	public int getDesignationId() {
 		return designationId;
 	}
@@ -113,8 +109,8 @@ public class LeaveVO extends SearchCriteria{
 		this.designationId = designationId;
 	}
 
-	public void setEmpId(int empId) {
-		this.empId = empId;
+	public void setEmployeeId(int empId) {
+		this.employeeId = empId;
 	}
 
 	public void setLeaveId(int leaveId) {
@@ -136,15 +132,7 @@ public class LeaveVO extends SearchCriteria{
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "employeeId:"+empId+" |  leaveType:"+this.leaveType+" | noOfLeaves:"+this.noOfLeaves +" | LeaveId:"+leaveId;
-	}
-
-	public int getHeadId() {
-		return headId;
-	}
-
-	public void setHeadId(int headId) {
-		this.headId = headId;
+		return "employeeId:"+employeeId+" |  leaveType:"+this.leaveType+" | noOfLeaves:"+this.noOfLeaves +" | LeaveId:"+leaveId;
 	}
 
 	public int getCasualLeaves() {
@@ -159,7 +147,7 @@ public class LeaveVO extends SearchCriteria{
 		return sickLeaves;
 	}
 
-	/*public void setCasualLeaves(int casualLeaves) {
+	public void setCasualLeaves(int casualLeaves) {
 		this.casualLeaves = casualLeaves;
 	}
 
@@ -170,7 +158,7 @@ public class LeaveVO extends SearchCriteria{
 	public void setSickLeaves(int sickLeaves) {
 		this.sickLeaves = sickLeaves;
 	}
-*/
+
 	public String getLeaveIds() {
 		return leaveIds;
 	}

@@ -15,13 +15,13 @@ $(document).ready(function() {
 	$.each(departmentList, function( index, value ) {
 		$('<option>').val(value.departmentId).text(value.departmantName).appendTo('#departmentId');
 	});
-	var deptId = "${employee.departmentId}";
+	var deptId = "${leave.departmentId}";
 	$('#departmentId').val(deptId);
-	var headId = "${employee.headId}";
+	var headId = "${leave.headId}";
 	if(deptId !=0) {
 		getHeadsByDept(deptId, headId);		
 	}
-	var firstName = "${employee.firstName}";
+	var firstName = "${leave.firstName}";
 	$('#firstName').val(firstName);
 	$('#closeBtn').click(function(event) {
 		   $("#searchDiv").toggle();
@@ -54,7 +54,7 @@ $(document).ready(function() {
       }--%>
       function viewLeave(empId){
     	  var f = document.forms['empSearch'];
-		  f.empId.value=empId;
+		  f.employeeId.value=empId;
 		  f.action="../Payroll/inputLeave";
 		  f.submit();
 	  }
@@ -66,7 +66,7 @@ $(document).ready(function() {
       function deleteLeave(id){
     	  if(confirm("Are you sure want to delete Employee Leave?")){
     		  var f = document.forms['empSearch'];
-    		  f.empId.value=id;
+    		  f.employeeId.value=id;
     		  f.action="../Payroll/deleteLeave";
     		  f.submit();
     	  }
@@ -114,10 +114,10 @@ $(document).ready(function() {
 					<td> ${leave.casualLeaves}</td>
 					<td> ${leave.paidLeaves}</td>
 					<td> ${leave.leaveBalance} </td>
-					<td><a href="#" onclick="viewLeave('${leave.empId}')" title="Edit">
+					<td><a href="#" onclick="viewLeave('${leave.employeeId}')" title="Edit">
 							<img src="../Payroll/resources/images/edit.png" alt="Edit" class="listImg"/>
 						</a>
-						<a href="#" onclick="deleteLeave('${leave.empId}')">
+						<a href="#" onclick="deleteLeave('${leave.employeeId}')">
 							<img src="../Payroll/resources/images/delete.png" alt="Delete" class="listImg"/>
 						</a>
 					</td>
@@ -133,7 +133,7 @@ $(document).ready(function() {
 	<form action="" name="editForm" method="post">
 		<%--<input type="hidden" name="designationId" value="0">
 		<input type="hidden" name="departmentId" value="0"> --%>
-		<input type="hidden" name="empId" value="0">
+		<input type="hidden" name="employeeId" value="0">
 		<input type="hidden" name="leaveId" value="0">
 		
 		

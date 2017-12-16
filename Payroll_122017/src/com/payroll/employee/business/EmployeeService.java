@@ -18,6 +18,10 @@ public class EmployeeService {
 		return new EmployeeDAO().getEmployees(deptId, desgId);
 	}
 	
+	public List<EmployeeVO> getEmployees(int desgId){
+		return new EmployeeDAO().getEmployeesByDesgId(desgId);
+	}
+	
 	public String addUpdateEmployee(com.payroll.employee.Employee emp){
 		return new EmployeeDAO().addUpdateEmployee(copyEmp(emp));
 	}

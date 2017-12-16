@@ -7,21 +7,28 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.payroll.HibernateConnection;
+import com.payroll.bank.dataobjects.BankDetails;
+import com.payroll.bank.dataobjects.BankDetailsDAO;
 import com.payroll.employee.bank.vo.BankVO;
+import com.payroll.employee.dataobjects.Employee;
+import com.payroll.employee.dataobjects.EmployeeDAO;
 import com.payroll.employee.salary.dataobjects.Salary;
 
-public class BankDAO {
+public class EmpBankDAO {
 	
 	public List<com.payroll.employee.bank.vo.BankVO> getBankList(){
 		List<com.payroll.employee.bank.vo.BankVO> bankList = null;
 			Session session = null;
 			
 			try{
-				String queryString = " select new com.payroll.employee.bank.vo.BankVO(b.empId, (select e.firstName from Employee e where e.employeeId = b.empId),"
-						+ " (select e.lastName from Employee e where e.employeeId = b.empId), "
-						+ "b.bankName, b.ifscCode, b.accountNo) from Bank b where b.status = ?";		
+				String queryString = " select new com.payroll.employee.bank.vo.BankVO(b.employee.employeeId, "
+						//+ "(select e.firstName from Employee e where e.employeeId = b.empId),"
+						//+ " (select e.lastName from Employee e where e.employeeId = b.empId), "
+						+ "b.employee.firstName, b.employee.lastName, b.bankDetails.bankId, "
+						+ "b.bankDetails.bankName, b.bankDetails.ifscCode, b.accountNo) from EmpBank b where b.status = ?";		
 				
 				session = HibernateConnection.getSessionFactory().openSession();
 				Query query = session.createQuery(queryString);
@@ -41,14 +48,14 @@ public class BankDAO {
 		Session session = null;
 		
 		try{
-			String queryString = " select new com.payroll.employee.bank.vo.BankVO(b.empId, "
-					+ "(select dept.departmentId from Department dept where dept.departmentId = (select eDept.departmentId "
-					+ "from EmpDepartment eDept where eDept.empId = b.empId)), (select desg.designationId "
-					+ "from Designation desg where desg.designationId = (select eDesg.designationId from EmpDesignation eDesg "
-					+ "where eDesg.empId = b.empId and eDesg.lastWokingDate is null)), "
-					+ "(select dh.headId from DesignationHead dh where dh.designationId = "
-					+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.empId = b.empId and eDesg.lastWokingDate is null)), "
-					+ "b.bankName, b.ifscCode, b.accountNo) from Bank b where b.status = ? and b.empId = ?";		
+			String queryString = " select new com.payroll.employee.bank.vo.BankVO(b.employee.employeeId, "
+					+ "(select dept.department.departmentId from EmpDepartment dept where dept.employee.employeeId = b.employee.employeeId), "
+					//+ "from EmpDepartment eDept where eDept.empId = b.empId)), (select desg.designationId "
+					+ "(select desg.designation.designationId from EmpDesignation desg where desg.employee.employeeId = b.employee.employeeId and desg.lastWokingDate is null), "
+					+ "(select dh.headInfo.headId from EmpHeadInfo dh where dh.employee.employeeId = b.employee.employeeId and dh.lastWokingDate is null), "
+					//+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.empId = b.empId and eDesg.lastWokingDate is null)), "
+					+ "b.bankDetails.bankId, b.bankDetails.bankName, b.bankDetails.ifscCode, b.accountNo) from EmpBank b "
+					+ "where b.status = ? and b.employee.employeeId = ?";		
 			
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
@@ -63,15 +70,19 @@ public class BankDAO {
 		return bankVO;
 	}
 	
-	public String addUpdateBank(Bank bank){
+	public String addUpdateBank(EmpBank bank){
 		String result = null;
 		Session session = null;
 		Transaction transaction = null;
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
-			Bank bankDB = checkEmpBank(bank.getEmpId(), session);
-			if(bankDB != null){
+			//EmpBank bankDB = checkEmpBank(bank.getEmployeeId(), session);
+			/*Employee employee = new EmployeeDAO().getById(bank.getEmployeeId());
+			BankDetails bankDetails = new BankDetailsDAO().getBankDetailsById(bank.getBankId());*/
+			Employee employee = (Employee)session.load(Employee.class, bank.getEmployeeId());
+			BankDetails bankDetails = (BankDetails)session.load(BankDetails.class, bank.getBankId());
+			/*if(bankDB != null){
 				if(bank.getAddUpdate() ==0){
 					result = "Bank details are exist for employee is exist!";
 					return result;
@@ -88,9 +99,21 @@ public class BankDAO {
 				bank.setStatus("A");
 				bank.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
 				session.save(bank);
-			}
+			}*/
+			bank.setEmployee(employee);
+			bank.setBankDetails(bankDetails);
+			bank.setStatus("A");
+			bank.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
+			if(bank.getAddUpdate() == 0)
+				session.save(bank);
+			else
+				session.update(bank);
 			transaction.commit();
 			result = "Yes";
+		}catch(ConstraintViolationException cv){
+			cv.printStackTrace();
+			transaction.rollback();
+			result = "Bank details are already exist for selected Employee!";
 		}catch(Exception e){
 			e.printStackTrace();
 			transaction.rollback();
@@ -101,17 +124,17 @@ public class BankDAO {
 		return result;
 	}
 
-	private Bank checkEmpBank(int empId, Session session){
-		Bank bank = null;
+	private EmpBank checkEmpBank(int empId, Session session){
+		EmpBank bank = null;
 		try{
 			if(session == null)
 				session = HibernateConnection.getSessionFactory().openSession();
-			Query query = session.createQuery("select b from Bank b where b.empId = ? and b.status = ?");
+			Query query = session.createQuery("select b from EmpBank b where b.empId = ? and b.status = ?");
 			//.setMaxResults(1).uniqueResult();
 			query.setParameter(0, empId);
 			query.setParameter(1, "A");
 			if(query.list() !=null && !query.list().isEmpty() )
-				bank = (Bank)query.list().get(0);
+				bank = (EmpBank)query.list().get(0);
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally {
@@ -126,7 +149,7 @@ public class BankDAO {
 		Session session = null;
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
-			Query query = session.createQuery("update Bank b set b.status = ?, b.rowUpdDate = ? where b.empId = ?");
+			Query query = session.createQuery("update EmpBank b set b.status = ?, b.rowUpdDate = ? where b.employee.employeeId = ?");
 			query.setParameter(0, "S");
 			query.setParameter(1, new Date());
 			query.setParameter(2, empId);

@@ -6,7 +6,7 @@ import com.payroll.Utils;
 
 public class BankVO {
 	
-	private int empId;
+	private int employeeId;
 	private String bankName;
 	private String ifscCode;
 	private String accountNo;
@@ -14,13 +14,13 @@ public class BankVO {
 	private int departmentId;
 	private int designationId;
 	private int headId;
-	
+	private int bankId;
 	public BankVO() {
 		
 	}
 	
-	public BankVO(int empId, String fName, String lName, String ifscCode, String accountNo, String bankName) {
-		this.empId = empId;
+	public BankVO(int empId, String fName, String lName, int bankId, String bankName, String ifscCode, String accountNo) {
+		this.employeeId = empId;
 		StringBuffer fullNameSB = new StringBuffer(fName);
 		fullNameSB.append(" ");
 		fullNameSB.append(Utils.safeTrim(lName));
@@ -28,19 +28,21 @@ public class BankVO {
 		this.ifscCode = ifscCode;
 		this.bankName = bankName;
 		this.accountNo = accountNo;
+		this.bankId = bankId;
 	}
 	
-	public BankVO(int empId, int deptId, int desgId, int headId, String ifscCode, String accountNo, String bankName) {
-		this.empId = empId;
+	public BankVO(int empId, int deptId, int desgId, int headId, int bankId, String bankName , String ifscCode, String accountNo) {
+		this.employeeId = empId;
 		this.ifscCode = ifscCode;
 		this.bankName = bankName;
 		this.accountNo = accountNo;
 		this.departmentId = deptId;
 		this.designationId = desgId;
 		this.headId = headId;
+		this.bankId = bankId;
 	}
-	public int getEmpId() {
-		return empId;
+	public int getEmployeeId() {
+		return employeeId;
 	}
 	public String getBankName() {
 		return bankName;
@@ -66,6 +68,10 @@ public class BankVO {
 
 	public int getHeadId() {
 		return headId;
+	}
+
+	public int getBankId() {
+		return bankId;
 	}
 	
 

@@ -128,9 +128,22 @@ $(document).ready(function() {
 			return false;
 		}
 		if($('#phone').val().trim() == ""){
-			alert("Mobile number must be provided!");
+			alert("Phone# must be provided!");
 			$('#phone').focus();
 			return false;
+		}else{
+			if(!allNumeric($('#phone').val().trim())){
+				alert("Phone# must be only numbers!");
+				$('#phone').focus();
+				return false;
+			}			
+		}
+		if($('#email').val().trim() != ""){
+			if(!emailValid($('#email').val())){
+				alert("You have entered an invalid email address!")  
+				$('#email').focus();
+			    return false;  
+			}		
 		}
 		var inputJson = { "firstName" : $('#fname').val(), "middleName" : $('#mname').val(), "lastName" : $('#lname').val(),"designationId" : $('#designationId').val(), 
 				"departmentId": $('#departmentId').val(), "email": $('#email').val(), "phone":$('#phone').val(), "pan":$('#pan').val(),
@@ -160,6 +173,27 @@ function showDate(date) {
 	alert('The date chosen is ' + date);
 }
 
+function validateEmail(emailText){   
+	<%--if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailText)){--%>
+	if(/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(emailText)){
+    	return true;  
+  	}  
+    return false;  
+}
+
+function allNumeric(numberTxt) {
+	var numbers = /^[0-9]+$/;
+	if(numberTxt.match(numbers)) {
+		return true;
+	}
+	return false;
+}
+
+function emailValid(emailTxt){
+    var re = /\S+@\S+/;
+    return re.test(emailTxt);
+}
+
 function getHeads(){
 	if($('#departmentId').val() == 0){
 		alert("Department must be selected to get Heads!");
@@ -169,6 +203,7 @@ function getHeads(){
 	var deptId = $('#departmentId').val();
 	getHeadsByDept(deptId);
 }
+
 
 function getHeadsByDept(deptId) {
 	var inputJson = { "departmentId" : deptId};

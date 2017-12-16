@@ -9,7 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.payroll.HibernateConnection;
-import com.payroll.employee.bank.dataobjects.Bank;
+import com.payroll.employee.bank.dataobjects.EmpBank;
 import com.payroll.employee.pf.vo.EmpPfVO;
 
 public class EmpPfDAO {

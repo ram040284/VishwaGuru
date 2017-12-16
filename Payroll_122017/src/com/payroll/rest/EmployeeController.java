@@ -67,13 +67,13 @@ public class EmployeeController {
 		   ObjectMapper mapper = new ObjectMapper();
 		   
 		   List<Department> deptList = new DepartmentService().getDepartments();
-		   List<Designation> desigList = new DesignationService().getDesignationList();
+		   //List<Designation> desigList = new DesignationService().getDesignationList();
 		   
 		   String depJSON = "";
 		   String desigJSON = "";
 			try {
 				depJSON = mapper.writeValueAsString(deptList);
-				desigJSON = mapper.writeValueAsString(desigList);
+				//desigJSON = mapper.writeValueAsString(desigList);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -85,7 +85,7 @@ public class EmployeeController {
 			ModelAndView model = new ModelAndView("employee", "command", employee);
 			model.addObject(employee);
 			model.addObject("departments", depJSON);
-			model.addObject("designations", desigJSON);
+			//model.addObject("designations", desigJSON);
 		 
 			return model;
 	   }

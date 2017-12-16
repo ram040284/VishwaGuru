@@ -7,7 +7,11 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.ConstraintViolationException;
+
 import com.payroll.HibernateConnection;
+import com.payroll.employee.dataobjects.Employee;
+import com.payroll.employee.dataobjects.EmployeeDAO;
 import com.payroll.employee.salary.vo.SalaryVO;
 
 public class SalaryDAO {
@@ -17,8 +21,10 @@ public class SalaryDAO {
 			Session session = null;
 			
 			try{
-				String queryString = " select new com.payroll.employee.salary.vo.SalaryVO(s.empId, (select e.firstName from Employee e where e.employeeId = s.empId),"
-						+ " (select e.lastName from Employee e where e.employeeId = s.empId), "
+				String queryString = " select new com.payroll.employee.salary.vo.SalaryVO(s.employee.employeeId, "
+						//+ "(select e.firstName from Employee e where e.employeeId = s.empId),"
+						//+ " (select e.lastName from Employee e where e.employeeId = s.empId), "
+						+"s.employee.firstName, s.employee.lastName, "
 						+ "s.year, s.basic, s.gradePay, s.scalePay, s.scaleInc) from Salary s where s.status = ?";		
 				
 				session = HibernateConnection.getSessionFactory().openSession();
@@ -41,13 +47,15 @@ public class SalaryDAO {
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
 			transaction = session.beginTransaction();
-			Salary salayDB = checkEmpSalary(salary.getEmpId(), session);
-			if(salayDB != null){
-				if(salary.getAddUpdate() ==0){
+			//Employee employee = new EmployeeDAO().getById(salary.getEmployeeId());
+			Employee employee = (Employee)session.load(Employee.class, salary.getEmployeeId());
+			//Salary salayDB = checkEmpSalary(salary.getEmployeeId(), session);
+			/*if(salayDB != null){
+				/*if(salary.getAddUpdate() ==0){
 					result = "Salary for selected employee is exist!";
 					return result;
-				}
-				salayDB.setBasic(salary.getBasic());
+				}*/
+				/*salayDB.setBasic(salary.getBasic());
 				salayDB.setGradePay(salary.getGradePay());
 				salayDB.setScaleInc(salary.getScaleInc());
 				salayDB.setScalePay(salary.getScalePay());
@@ -55,13 +63,22 @@ public class SalaryDAO {
 				salayDB.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
 				session.update(salayDB);
 			}
-			else {
+			else {*/
+				salary.setEmployee(employee);
 				salary.setRowUpdDate(new Timestamp(System.currentTimeMillis()));
 				salary.setStatus("A");
-				session.save(salary);
-			}
+				if(salary.getAddUpdate() == 0)
+					session.save(salary);
+				else
+					session.update(salary);
+				
+			//}
 			transaction.commit();
 			result = "Yes";
+		}catch(ConstraintViolationException cv){
+			cv.printStackTrace();
+			transaction.rollback();
+			result = "Salary details are already exist for selected Employee!";
 		}catch(Exception e){
 			e.printStackTrace();
 			transaction.rollback();
@@ -76,18 +93,19 @@ public class SalaryDAO {
 		SalaryVO salVO = null;
 		Session session = null;
 		try{
-			String queryString = " select new com.payroll.employee.salary.vo.SalaryVO(s.empId, "+
-					"(select dept.departmentId from Department dept where dept.departmentId = (select eDept.departmentId "
-					+ "from EmpDepartment eDept where eDept.empId = s.empId)), (select desg.designationId "
-					+ "from Designation desg where desg.designationId = (select eDesg.designationId from EmpDesignation eDesg "
-					+ "where eDesg.empId = s.empId and eDesg.lastWokingDate is null)), "
-					+ "(select dh.headId from DesignationHead dh where dh.designationId = "
-					+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.empId = s.empId and eDesg.lastWokingDate is null)), "
-					+ "s.year, s.basic, s.gradePay, s.scalePay, s.scaleInc) from Salary s where s.empId = ?";		
+			String queryString = " select new com.payroll.employee.salary.vo.SalaryVO(s.employee.employeeId, "+
+					"(select eDept.department.departmentId from EmpDepartment eDept where eDept.employee.employeeId = s.employee.employeeId), "
+					//+ "from EmpDepartment eDept where eDept.employee.employeeId = s.employee.employeeId)), "
+					+ "(select eDesg.designation.designationId from EmpDesignation eDesg where eDesg.employee.employeeId = s.employee.employeeId and eDesg.lastWokingDate is null), "
+					//+ "where eDesg.employee.employeeId = s.employee.employeeId and eDesg.lastWokingDate is null)), "
+					+ "(select dh.headInfo.headId from EmpHeadInfo dh where dh.employee.employeeId = s.employee.employeeId and dh.lastWokingDate is null), "
+					//+ "(select eDesg.designationId from EmpDesignation eDesg where eDesg.employee.employeeId = s.employee.employeeId and eDesg.lastWokingDate is null)), "
+					+ "s.year, s.basic, s.gradePay, s.scalePay, s.scaleInc) from Salary s where s.employee.employeeId = ? and s.status = ?";		
 			
 			session = HibernateConnection.getSessionFactory().openSession();
 			Query query = session.createQuery(queryString);
 			query.setParameter(0, empId);
+			query.setParameter(1, "A");
 			salVO = (SalaryVO)(!(query.list().isEmpty()) ? query.list().get(0) : null);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -102,7 +120,7 @@ public class SalaryDAO {
 		Session session = null;
 		try{
 			session = HibernateConnection.getSessionFactory().openSession();
-			Query query = session.createQuery("update Salary s set s.status = ?, s.rowUpdDate = ? where s.empId = ?");
+			Query query = session.createQuery("update Salary s set s.status = ?, s.rowUpdDate = ? where s.employee.employeeId = ?");
 			query.setParameter(0, "S");
 			query.setParameter(1, new Date());
 			query.setParameter(2, empId);
@@ -122,7 +140,7 @@ public class SalaryDAO {
 		try{
 			if(session == null)
 				session = HibernateConnection.getSessionFactory().openSession();
-			Query query = session.createQuery("select s from Salary s where s.empId = ? and s.status = ?");
+			Query query = session.createQuery("select s from Salary s where s.employee.employeeId = ? and s.status = ?");
 			//.setMaxResults(1).uniqueResult();
 			query.setParameter(0, empId);
 			query.setParameter(1, "A");

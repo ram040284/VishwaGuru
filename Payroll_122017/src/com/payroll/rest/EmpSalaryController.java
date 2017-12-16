@@ -39,23 +39,23 @@ public class EmpSalaryController {
 	@RequestMapping(value = "/inputSalary", method = RequestMethod.POST)
 	public ModelAndView inputSalary(SalaryVO salary) {
 		ObjectMapper mapper = new ObjectMapper();
-		System.out.println("inputSalary -- salary - empId:"+salary.getEmpId());
-		List<Designation> desigList = new DesignationService().getDesignationList();
+		System.out.println("inputSalary -- salary - empId:"+salary.getEmployeeId());
+		//List<Designation> desigList = new DesignationService().getDesignationList();
 		List<Department> deptList = new DepartmentService().getDepartments();
 		String desigJSON = "";
 		String depJSON = "";
 		try {
 			depJSON = mapper.writeValueAsString(deptList);
-			desigJSON = mapper.writeValueAsString(desigList);
+			//desigJSON = mapper.writeValueAsString(desigList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(salary.getEmpId() != 0)
-			salary = new SalaryService().getEmpSalary(salary.getEmpId());
+		if(salary.getEmployeeId() != 0)
+			salary = new SalaryService().getEmpSalary(salary.getEmployeeId());
 		ModelAndView model = new ModelAndView("salary", "command", salary);
 		model.addObject("salary", salary);
 		model.addObject("departments", depJSON);
-		model.addObject("designations", desigJSON);
+		//model.addObject("designations", desigJSON);
 		return model;
 	}
 	   
@@ -70,8 +70,8 @@ public class EmpSalaryController {
 	
 	@RequestMapping(value="/deleteSalary",method=RequestMethod.POST)
 	public String deleteSalary(Salary salary){
-	   System.out.println("deleteSalary -- salary:"+salary.getEmpId());
-	   String result = new SalaryService().deleteSalary(salary.getEmpId());
+	   System.out.println("deleteSalary -- salary:"+salary.getEmployeeId());
+	   String result = new SalaryService().deleteSalary(salary.getEmployeeId());
 	   System.out.println("Result:"+result);
 	   return "listSalary";
 	}

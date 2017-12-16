@@ -58,8 +58,8 @@ public class EmpLeaveController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(leave.getEmpId()!=0)
-			leave = new LeaveService().getLeaveByIde(leave.getEmpId());
+		if(leave.getEmployeeId()!=0)
+			leave = new LeaveService().getLeaveByIde(leave.getEmployeeId());
 		ModelAndView model = new ModelAndView("leave", "command", leave);
 		model.addObject("leave", leave);
 		model.addObject("departments", depJSON);
@@ -68,8 +68,7 @@ public class EmpLeaveController {
 	}
 	   
 	@RequestMapping(value="/addLeave",method=RequestMethod.POST)
-	public @ResponseBody
-	String addLeave(@RequestBody LeaveVO leave){
+	public @ResponseBody String addLeave(@RequestBody LeaveVO leave){
 	   System.out.println("addLeave -- Leave:"+leave);
 	   String result = new LeaveService().addUpdateLeave(leave);
 	   System.out.println("Result:"+result);
@@ -78,8 +77,8 @@ public class EmpLeaveController {
 	
 	@RequestMapping(value="/deleteLeave",method=RequestMethod.POST)
 	public ModelAndView deleteLeave(LeaveVO leave){
-	   System.out.println("deleteLeave -- Leave:"+leave.getEmpId());
-	   String result = new LeaveService().deleteLeave(leave.getEmpId());
+	   System.out.println("deleteLeave -- Leave:"+leave.getEmployeeId());
+	   String result = new LeaveService().deleteLeave(leave.getEmployeeId());
 	   System.out.println("result:"+result);
 	   //return "listLeaves";
 	   return listResult(leave);
@@ -87,13 +86,13 @@ public class EmpLeaveController {
 
 	@RequestMapping(value="/empLeaves",method=RequestMethod.POST)
 	public String getLeavesByEmp(LeaveVO leave){
-	   System.out.println("empLeaves -- Leave:"+leave.getEmpId());
+	   System.out.println("empLeaves -- Leave:"+leave.getEmployeeId());
 	   List<LeaveVO> leaveVoNew = new LeaveService().getEmpAvailableLeaves(leave.getLeaveId());
 	   System.out.println("result:"+leaveVoNew);
 	   return "listLeaves";
 	}
 	
-	private ModelAndView listResult(LeaveVO employee) {
+	private ModelAndView listResult(LeaveVO leaveVO) {
 		   ObjectMapper mapper = new ObjectMapper();
 		   List<Department> deptList = new DepartmentService().getDepartments();
 		   String depJSON = "";
@@ -102,12 +101,14 @@ public class EmpLeaveController {
 		   }catch (Exception e) {
 			   e.printStackTrace();
 		   }
+		   System.out.println("leaveVO:"+leaveVO);
 		   List<LeaveVO> leaveVOList = null;
-		   if(employee.getDepartmentId() !=0 || !Utils.isEmpty(employee.getFirstName())){
+		   if(leaveVO.getDepartmentId() !=0 || !Utils.isEmpty(leaveVO.getFirstName())){
 			   leaveVOList = new LeaveService().getLeaves(
-				   employee.getDepartmentId(), employee.getHeadId(), employee.getFirstName());
+					   leaveVO.getDepartmentId(), leaveVO.getHeadId(), leaveVO.getFirstName());
 		   }
-		   ModelAndView model = new ModelAndView("listLeaves", "command", employee);
+		   ModelAndView model = new ModelAndView("listLeaves", "command", leaveVO);
+		   model.addObject("leave", leaveVO);
 		   model.addObject("leaveVOList", leaveVOList);
 		   model.addObject("departments", depJSON);
 		   return model;
